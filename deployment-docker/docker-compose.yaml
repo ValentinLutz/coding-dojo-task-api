@@ -1,0 +1,15 @@
+version: '3.9'
+
+networks:
+  default:
+    name: coding-dojo-api-golang
+
+services:
+  app:
+    image: ghcr.io/valentinlutz/coding-dojo-api-golang:latest
+    container_name: app
+    hostname: app
+    volumes:
+      - ../config/config.yaml:/app/config/config.yaml:ro
+    ports:
+      - '8000:8080'

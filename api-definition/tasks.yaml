@@ -1,0 +1,147 @@
+openapi: 3.0.0
+info:
+  title: Tasks API
+  version: 0.0.1
+
+paths:
+  /tasks:
+    get:
+      summary: Returns a list of tasks.
+      responses:
+        '200':
+          description: A JSON array of tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tasks_response'
+    post:
+      summary: Create new task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/task_request'
+      responses:
+        '201':
+          description: Successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/task_response'
+        
+  /tasks/{uuid}:
+    get:
+      summary: Return task with UUID
+      parameters:
+        - in: path
+          name: uuid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get Task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/task_response'
+        '404':
+          description: "Task not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+    put:
+      summary: Replace task with UUID
+      parameters:
+        - in: path
+          name: uuid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/task_request'
+      responses:
+        '200':
+          description: Replace Task
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+    delete:
+      summary: Delete task with uuid
+      parameters:
+        - in: path
+          name: uuid
+          required: true
+          schema:
+            type: string  
+      responses:
+        '200':
+          description: Deleted task
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error_response"
+components:
+  schemas:
+    error_response:
+      type: object
+      required:
+        - method
+        - path
+        - timestamp
+        - code
+      properties:
+        method:
+          type: string
+          example: GET
+        path:
+          type: string
+          example: /tasks
+        timestamp:
+          type: string
+          format: date-time
+        code:
+          type: integer
+          example: 9009
+        message:
+          type: string
+          example: panic it's over 9000
+    task_response:
+      properties:
+        title:
+          type: string
+          example: "cleaning kitchen"
+        description:
+          type: string
+          example: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam"
+        uuid:
+          type: string
+          example: "4f6b3bf7-21a7-4b43-ba74-e9e442e875a2"
+      required:
+        - uuid
+        - title
+    tasks_response:
+      type: array
+      items:
+        $ref: '#/components/schemas/task_response'
+    task_request:
+      properties:
+        title:
+          type: string
+          example: "cleaning kitchen"
+        description:
+          type: string
+          example: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam"
+      required:
+        - title
