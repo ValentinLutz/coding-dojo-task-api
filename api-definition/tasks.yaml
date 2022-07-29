@@ -47,11 +47,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/task_response'
         '404':
-          description: "Task not found"
+          description: Task not found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/error_response"
+                $ref: '#/components/schemas/error_response'
     put:
       summary: Replace task with UUID
       parameters:
@@ -68,13 +68,13 @@ paths:
               $ref: '#/components/schemas/task_request'
       responses:
         '200':
-          description: Replace Task
+          description: Replace task
         '404':
           description: Task not found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/error_response"
+                $ref: '#/components/schemas/error_response'
     delete:
       summary: Delete task with uuid
       parameters:
@@ -91,7 +91,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/error_response"
+                $ref: '#/components/schemas/error_response'
 components:
   schemas:
     error_response:
@@ -121,13 +121,13 @@ components:
       properties:
         title:
           type: string
-          example: "cleaning kitchen"
+          example: Lorem ipsum dolor
         description:
           type: string
-          example: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam"
+          example: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dia
         uuid:
           type: string
-          example: "4f6b3bf7-21a7-4b43-ba74-e9e442e875a2"
+          example: 4f6b3bf7-21a7-4b43-ba74-e9e442e875a2
       required:
         - uuid
         - title
@@ -139,9 +139,9 @@ components:
       properties:
         title:
           type: string
-          example: "cleaning kitchen"
+          example: Lorem ipsum dolor
         description:
           type: string
-          example: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam"
+          example: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dia
       required:
         - title
