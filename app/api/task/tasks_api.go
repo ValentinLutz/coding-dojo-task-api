@@ -50,9 +50,9 @@ func (a *API) postTask(responseWriter http.ResponseWriter, request *http.Request
 		Error(responseWriter, request, http.StatusBadRequest, errors.BadRequest, err.Error())
 		return
 	}
-	a.service.SaveTask(taskRequest.ToTaskEntity())
+	taskEntity := a.service.SaveTask(taskRequest.ToTaskEntity())
 
-	StatusCreated(responseWriter, request, nil)
+	StatusCreated(responseWriter, request, FromOrderEntity(taskEntity))
 }
 
 func (a *API) getTask(responseWriter http.ResponseWriter, request *http.Request) {

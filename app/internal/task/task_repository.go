@@ -9,7 +9,7 @@ import (
 type Repository interface {
 	FindAll() ([]TaskEntity, error)
 	FindById(uuid uuid.UUID) (TaskEntity, error)
-	Save(taskEntity TaskEntity)
+	Save(taskEntity TaskEntity) TaskEntity
 	DeleteById(uuid uuid.UUID)
 }
 
@@ -42,10 +42,11 @@ func (taskRepository *MemoryRepository) FindById(uuid uuid.UUID) (TaskEntity, er
 	return entity, nil
 }
 
-func (taskRepository *MemoryRepository) Save(taskEntity TaskEntity) {
+func (taskRepository *MemoryRepository) Save(taskEntity TaskEntity) TaskEntity {
 	taskRepository.mutex.Lock()
 	taskRepository.tasks[taskEntity.Uuid] = taskEntity
 	taskRepository.mutex.Unlock()
+	return taskEntity
 }
 
 func (taskRepository *MemoryRepository) DeleteById(uuid uuid.UUID) {

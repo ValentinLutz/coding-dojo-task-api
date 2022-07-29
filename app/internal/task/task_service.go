@@ -36,8 +36,8 @@ func (service *Service) GetTask(uuid uuid.UUID) (TaskEntity, error) {
 	return taskEntity, nil
 }
 
-func (service *Service) SaveTask(taskEntity TaskEntity) {
-	service.repository.Save(taskEntity)
+func (service *Service) SaveTask(taskEntity TaskEntity) TaskEntity {
+	return service.repository.Save(taskEntity)
 }
 
 func (service *Service) DeleteTask(uuid uuid.UUID) {
