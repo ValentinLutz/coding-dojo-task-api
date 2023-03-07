@@ -72,7 +72,7 @@ func (api *API) UpdateTask(w http.ResponseWriter, r *http.Request, taskId types.
 		return
 	}
 
-	api.taskService.CreateTask(taskRequest.ToTask(taskId))
+	api.taskService.UpdateTask(taskRequest.ToTask(taskId))
 
 	StatusOK(w, r, nil)
 }

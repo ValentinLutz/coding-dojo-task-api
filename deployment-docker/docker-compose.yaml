@@ -2,19 +2,29 @@ version: '3.9'
 
 networks:
   default:
-    name: coding-dojo-api-golang
+    name: task_service
 
 services:
-  app:
-    image: ghcr.io/valentinlutz/coding-dojo-api-golang:latest
-    container_name: app
-    hostname: app
-    volumes:
-      - ../config/config.yaml:/app/config/config.yaml:ro
+  # app:
+  #   image: ghcr.io/valentinlutz/coding-dojo-api-golang:latest
+  #   container_name: app
+  #   hostname: app
+  #   volumes:
+  #     - ../config/config.yaml:/app/config/config.yaml:ro
+  #   ports:
+  #     - '8080:8080'
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: 1
+  #         memory: 250M
+
+  postgres: 
+    image: postgres:14.2
+    container_name: postgres
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
     ports:
-      - '8080:8080'
-    deploy:
-      resources:
-        limits:
-          cpus: 1
-          memory: 250M
+      - '5432:5432'

@@ -15,6 +15,6 @@ func FromTask(task model.TaskEntity) TaskResponse {
 	return TaskResponse{
 		Description: task.Description,
 		Title:       task.Title,
-		TaskId:      task.Uuid,
+		TaskId:      task.TaskId,
 	}
 }

@@ -50,7 +50,6 @@ database.migrate:: ## Migrate database | PROFILE, FLYWAY_USER, FLYWAY_PASSWORD
 		-password=${FLYWAY_PASSWORD}
 
 
-docker.up:: ## Start containers | PROJECT_NAME
-	docker compose -p ${PROJECT_NAME} \
-		-f deployment-docker/docker-compose.yaml \
+docker.up:: ## Start containers 
+	docker compose -f deployment-docker/docker-compose.yaml \
 		up -d --force-recreate

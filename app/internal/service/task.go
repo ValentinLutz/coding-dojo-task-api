@@ -42,5 +42,5 @@ func (taskService *Task) GetTask(uuid uuid.UUID) (model.TaskEntity, error) {
 }
 
 func (taskService *Task) UpdateTask(taskEntity model.TaskEntity) (model.TaskEntity, error) {
-	return taskService.taskRepository.Save(taskEntity)
+	return taskService.taskRepository.Update(taskEntity)
 }

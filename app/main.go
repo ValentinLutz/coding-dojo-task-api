@@ -19,6 +19,8 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -33,7 +35,8 @@ func main() {
 	if memory {
 		taskRepository = taskrepo.NewMemory()
 	} else {
-		taskRepository = taskrepo.NewMemory()
+		database := NewDatabase()
+		taskRepository = taskrepo.NewPostres(database)
 	}
 
 	taskService := service.NewTask(taskRepository)
@@ -49,6 +52,16 @@ func main() {
 	log.Printf("received signal: %v", (<-stopChannel).String())
 
 	server.Stop()
+}
+
+func NewDatabase() *sqlx.DB {
+	db, err := sqlx.Connect("postgres", "host=localhost port=5432 user=test password=test dbname=test sslmode=disable")
+	if err != nil {
+		log.Fatalf("failed to connect to database: %v", err)
+	}
+
+	db.SetMaxOpenConns(100)
+	return db
 }
 
 func NewHandler(taskApi http.Handler) http.Handler {

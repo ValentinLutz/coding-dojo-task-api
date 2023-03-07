@@ -20,7 +20,7 @@ func FromJSON(reader io.Reader) (TaskRequest, error) {
 
 func (taskRequest TaskRequest) ToNewTask() model.TaskEntity {
 	return model.TaskEntity{
-		Uuid:        uuid.New(),
+		TaskId:      uuid.New(),
 		Title:       taskRequest.Title,
 		Description: taskRequest.Description,
 	}
@@ -28,7 +28,7 @@ func (taskRequest TaskRequest) ToNewTask() model.TaskEntity {
 
 func (taskRequest TaskRequest) ToTask(taskId uuid.UUID) model.TaskEntity {
 	return model.TaskEntity{
-		Uuid:        taskId,
+		TaskId:      taskId,
 		Title:       taskRequest.Title,
 		Description: taskRequest.Description,
 	}
