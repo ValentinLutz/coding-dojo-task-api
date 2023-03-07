@@ -3,8 +3,9 @@ package main
 import (
 	"app/incoming/openapi"
 	"app/incoming/taskapi"
-	"app/internal/task"
-	internalTask "app/internal/task"
+	"app/internal/port"
+	"app/internal/service"
+	"app/outgoing/taskrepo"
 	"errors"
 	"log"
 
@@ -21,25 +22,25 @@ import (
 )
 
 var (
-	port   = *flag.Int("port", 8080, "http server port")
-	memory = *flag.Bool("memory", false, "use in-memory storage")
+	serverPort = *flag.Int("port", 8080, "http server port")
+	memory     = *flag.Bool("memory", false, "use in-memory storage")
 )
 
 func main() {
 	flag.Parse()
 
-	var taskRepository task.Repository
+	var taskRepository port.TaskRepository
 	if memory {
-		taskRepository = internalTask.NewMemoryRepository()
+		taskRepository = taskrepo.NewMemory()
 	} else {
-		taskRepository = internalTask.NewMemoryRepository()
+		taskRepository = taskrepo.NewMemory()
 	}
 
-	taskService := internalTask.NewService(taskRepository)
+	taskService := service.NewTask(taskRepository)
 	taskApi := taskapi.New(taskService)
 
 	handler := NewHandler(taskApi)
-	server := NewServer(port, handler)
+	server := NewServer(serverPort, handler)
 
 	go server.Start()
 

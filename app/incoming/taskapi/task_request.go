@@ -1,7 +1,7 @@
 package taskapi
 
 import (
-	"app/internal/task"
+	"app/internal/model"
 	"encoding/json"
 	"io"
 
@@ -18,16 +18,16 @@ func FromJSON(reader io.Reader) (TaskRequest, error) {
 	return taskRequest, nil
 }
 
-func (taskRequest TaskRequest) ToNewTask() task.TaskEntity {
-	return task.TaskEntity{
+func (taskRequest TaskRequest) ToNewTask() model.TaskEntity {
+	return model.TaskEntity{
 		Uuid:        uuid.New(),
 		Title:       taskRequest.Title,
 		Description: taskRequest.Description,
 	}
 }
 
-func (taskRequest TaskRequest) ToTask(taskId uuid.UUID) task.TaskEntity {
-	return task.TaskEntity{
+func (taskRequest TaskRequest) ToTask(taskId uuid.UUID) model.TaskEntity {
+	return model.TaskEntity{
 		Uuid:        taskId,
 		Title:       taskRequest.Title,
 		Description: taskRequest.Description,

@@ -1,17 +1,17 @@
 package taskapi
 
 import (
-	"app/internal/task"
+	"app/internal/service"
 	"net/http"
 
 	"github.com/deepmap/oapi-codegen/pkg/types"
 )
 
 type API struct {
-	taskService *task.Service
+	taskService *service.Task
 }
 
-func New(taskService *task.Service) http.Handler {
+func New(taskService *service.Task) http.Handler {
 	taskApi := &API{
 		taskService: taskService,
 	}
@@ -40,7 +40,11 @@ func (api *API) CreateTask(w http.ResponseWriter, r *http.Request) {
 		StatusInternalServerError(w, r, err.Error())
 		return
 	}
-	task := api.taskService.SaveTask(taskRequest.ToNewTask())
+	task, err := api.taskService.CreateTask(taskRequest.ToNewTask())
+	if err != nil {
+		StatusInternalServerError(w, r, err.Error())
+		return
+	}
 
 	StatusCreated(w, r, FromTask(task))
 }
@@ -68,7 +72,7 @@ func (api *API) UpdateTask(w http.ResponseWriter, r *http.Request, taskId types.
 		return
 	}
 
-	api.taskService.SaveTask(taskRequest.ToTask(taskId))
+	api.taskService.CreateTask(taskRequest.ToTask(taskId))
 
 	StatusOK(w, r, nil)
 }

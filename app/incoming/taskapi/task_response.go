@@ -1,7 +1,7 @@
 package taskapi
 
 import (
-	"app/internal/task"
+	"app/internal/model"
 	"encoding/json"
 	"io"
 )
@@ -11,7 +11,7 @@ func (taskResponse TaskResponse) ToJSON(writer io.Writer) error {
 	return encoder.Encode(taskResponse)
 }
 
-func FromTask(task task.TaskEntity) TaskResponse {
+func FromTask(task model.TaskEntity) TaskResponse {
 	return TaskResponse{
 		Description: task.Description,
 		Title:       task.Title,
