@@ -2,20 +2,16 @@ package task
 
 import (
 	"github.com/google/uuid"
-	"github.com/rs/zerolog"
 )
 
 type Service struct {
-	logger     *zerolog.Logger
 	repository Repository
 }
 
 func NewService(
-	logger *zerolog.Logger,
 	repository Repository,
 ) *Service {
 	return &Service{
-		logger:     logger,
 		repository: repository,
 	}
 }

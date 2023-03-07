@@ -1,103 +1,104 @@
 package main
 
 import (
-	"app/api"
-	"app/api/task"
-	"app/internal"
+	"app/incoming/openapi"
+	"app/incoming/taskapi"
+	"app/internal/task"
 	internalTask "app/internal/task"
-	"app/serve"
+	"errors"
+	"log"
+
 	"context"
 	"flag"
 	"fmt"
-	"github.com/julienschmidt/httprouter"
-	"github.com/rs/zerolog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/go-chi/chi/v5"
 )
 
 var (
-	configFile = *flag.String("config", "config/config.yaml", "config file")
+	port   = *flag.Int("port", 8080, "http server port")
+	memory = *flag.Bool("memory", false, "use in-memory storage")
 )
 
 func main() {
 	flag.Parse()
-	logger := internal.NewLogger()
 
-	newConfig, err := internal.NewConfig(configFile)
-	if err != nil {
-		logger.Fatal().
-			Err(err).
-			Str("path", configFile).
-			Msg("Failed to load config file")
+	var taskRepository task.Repository
+	if memory {
+		taskRepository = internalTask.NewMemoryRepository()
+	} else {
+		taskRepository = internalTask.NewMemoryRepository()
 	}
 
-	internal.SetLogLevel(newConfig.Logger.Level)
+	taskService := internalTask.NewService(taskRepository)
+	taskApi := taskapi.New(taskService)
 
-	server := NewServer(logger, newConfig)
+	handler := NewHandler(taskApi)
+	server := NewServer(port, handler)
 
-	go StartServer(server, logger)
-	GracefulServerShutdown(server, logger)
+	go server.Start()
+
+	stopChannel := make(chan os.Signal, 1)
+	signal.Notify(stopChannel, syscall.SIGINT, syscall.SIGTERM)
+	log.Printf("received signal: %v", (<-stopChannel).String())
+
+	server.Stop()
 }
 
-func StartServer(server *http.Server, logger *zerolog.Logger) {
-	logger.Info().
-		Str("address", server.Addr).
-		Msg("Starting server")
-	err := server.ListenAndServe()
-	if err != http.ErrServerClosed {
-		logger.Fatal().
-			Err(err).
-			Msg("Failed to start server")
+func NewHandler(taskApi http.Handler) http.Handler {
+	router := chi.NewRouter()
+
+	router.Group(func(r chi.Router) {
+		openAPI := openapi.New()
+		openAPI.RegisterRoutes(r)
+	})
+
+	router.Group(func(r chi.Router) {
+		r.Mount("/", taskApi)
+	})
+
+	return router
+}
+
+type Server struct {
+	httpServer *http.Server
+	port       int
+}
+
+func NewServer(port int, handler http.Handler) *Server {
+	return &Server{
+		httpServer: &http.Server{
+			Addr:    fmt.Sprintf(":%d", port),
+			Handler: handler,
+		},
+		port: port,
 	}
-
 }
 
-func GracefulServerShutdown(server *http.Server, logger *zerolog.Logger) {
-	osSignal := make(chan os.Signal, 1)
-	signal.Notify(osSignal, os.Interrupt, syscall.SIGTERM)
-	<-osSignal
+func (server *Server) Start() {
+	log.Printf("starting server on port: %v\n", server.port)
 
+	err := server.httpServer.ListenAndServe()
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
+		log.Fatalf("failed to start server: %s\n", err)
+	}
+}
+
+func (server *Server) Stop() {
 	timeout := time.Second * 20
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	logger.Info().Float64("timeout", timeout.Seconds()).Msg("Stopping server")
-	err := server.Shutdown(ctx)
+	log.Printf("stopping server with timeout: %v\n", timeout.Seconds())
+	err := server.httpServer.Shutdown(ctx)
 	if err != nil {
-		logger.Error().
-			Err(err).
-			Msg("Failed to shutdown server")
-	} else {
-		logger.Info().Msg("Server stopped")
+		log.Fatalf("failed to stop server gracefully: %s\n", err)
 	}
-}
-
-func NewServer(logger *zerolog.Logger, config internal.Config) *http.Server {
-	router := httprouter.New()
-
-	taskRepository := internalTask.NewMemoryRepository()
-	taskService := internalTask.NewService(logger, taskRepository)
-
-	orderAPI := task.NewAPI(logger, taskService)
-	orderAPI.RegisterHandlers(router)
-
-	swaggerUI := serve.NewSwaggerUI(logger)
-	swaggerUI.RegisterSwaggerUI(router)
-	swaggerUI.RegisterOpenAPISchemas(router)
-
-	routerWithMiddleware := api.NewRequestResponseLogger(router, logger)
-
-	serverConfig := config.Server
-
-	return &http.Server{
-		Addr:         fmt.Sprintf(":%d", serverConfig.Port),
-		Handler:      routerWithMiddleware,
-		ErrorLog:     internal.NewLoggerWrapper(logger).ToLogger(),
-		ReadTimeout:  time.Second * time.Duration(serverConfig.Timeout.Read),
-		WriteTimeout: time.Second * time.Duration(serverConfig.Timeout.Write),
-		IdleTimeout:  time.Second * time.Duration(serverConfig.Timeout.Idle),
-	}
+	log.Println("server stopped")
+	// stop other connections like database, message queue
 }

@@ -1,4 +1,4 @@
-package task
+package taskapi
 
 import (
 	"app/internal/task"
@@ -11,10 +11,10 @@ func (taskResponse TaskResponse) ToJSON(writer io.Writer) error {
 	return encoder.Encode(taskResponse)
 }
 
-func FromOrderEntity(task task.TaskEntity) TaskResponse {
+func FromTask(task task.TaskEntity) TaskResponse {
 	return TaskResponse{
 		Description: task.Description,
 		Title:       task.Title,
-		Uuid:        task.Uuid.String(),
+		TaskId:      task.Uuid,
 	}
 }

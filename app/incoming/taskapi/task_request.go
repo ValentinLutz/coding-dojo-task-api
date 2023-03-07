@@ -1,10 +1,11 @@
-package task
+package taskapi
 
 import (
 	"app/internal/task"
 	"encoding/json"
-	"github.com/google/uuid"
 	"io"
+
+	"github.com/google/uuid"
 )
 
 func FromJSON(reader io.Reader) (TaskRequest, error) {
@@ -17,9 +18,17 @@ func FromJSON(reader io.Reader) (TaskRequest, error) {
 	return taskRequest, nil
 }
 
-func (taskRequest TaskRequest) ToTaskEntity() task.TaskEntity {
+func (taskRequest TaskRequest) ToNewTask() task.TaskEntity {
 	return task.TaskEntity{
 		Uuid:        uuid.New(),
+		Title:       taskRequest.Title,
+		Description: taskRequest.Description,
+	}
+}
+
+func (taskRequest TaskRequest) ToTask(taskId uuid.UUID) task.TaskEntity {
+	return task.TaskEntity{
+		Uuid:        taskId,
 		Title:       taskRequest.Title,
 		Description: taskRequest.Description,
 	}

@@ -1,7 +1,7 @@
 const openAPIFiles = [
   {
-    url: '../openapi/tasks.yaml',
-    name: 'Tasks API'
+    url: '../openapi/task_api.json',
+    name: 'Task API'
   }
 ];
 
@@ -20,6 +20,7 @@ window.onload = function() {
     plugins: [
       SwaggerUIBundle.plugins.DownloadUrl
     ],
+    displayRequestDuration: true,
     layout: "StandaloneLayout"
   });
 
