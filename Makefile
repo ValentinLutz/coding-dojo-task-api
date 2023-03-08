@@ -29,12 +29,7 @@ test.unit::  app/incoming/orderapi/server.gen.go ## Run the unit tests
 		go test -cover ./...
 
 test.load:: ## Run load tests
-	docker run -it \
-		--rm \
-		--volume ${PWD}/test-load:/k6 \
-		--network coding-dojo-api-golang \
-        grafana/k6:0.39.0 \
-		run /k6/script.js \
+	k6 run test-load/script.js 
 
 
 database.migrate:: ## Migrate database | PROFILE, FLYWAY_USER, FLYWAY_PASSWORD
@@ -48,4 +43,4 @@ database.migrate:: ## Migrate database | PROFILE, FLYWAY_USER, FLYWAY_PASSWORD
 
 docker.up:: ## Start containers 
 	docker compose -f deployment-docker/docker-compose.yaml \
-		up -d --force-recreate
+		up --force-recreate

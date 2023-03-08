@@ -6,6 +6,7 @@ services:
     build:
       context: ../
       dockerfile: app/Dockerfile
+    command: ["./app", "-port", "8080", "-memory", "false"]
     container_name: app
     network_mode: host
     deploy:

@@ -1,35 +1,11 @@
 import http from 'k6/http';
 
-export const BASE_URI = 'http://app:8080'
-export const VIRTUAL_USERS = 60
-export const ITERATIONS = 60
+export const BASE_URI = 'http://localhost:8080'
+export const VIRTUAL_USERS = 1000
+export const ITERATIONS = 10
 
 export const options = {
     scenarios: {
-        get_tasks: {
-            executor: 'per-vu-iterations',
-            exec: 'getTasks',
-            vus: VIRTUAL_USERS,
-            iterations: ITERATIONS,
-        },
-        add_task: {
-            executor: 'per-vu-iterations',
-            exec: 'addTask',
-            vus: VIRTUAL_USERS,
-            iterations: ITERATIONS,
-        },
-        get_task: {
-            executor: 'per-vu-iterations',
-            exec: 'getTask',
-            vus: VIRTUAL_USERS,
-            iterations: ITERATIONS,
-        },
-        replace_task: {
-            executor: 'per-vu-iterations',
-            exec: 'replaceTask',
-            vus: VIRTUAL_USERS,
-            iterations: ITERATIONS,
-        },
         delete_task: {
             executor: 'per-vu-iterations',
             exec: 'deleteTask',
@@ -55,28 +31,28 @@ export function addTask() {
 }
 
 export function getTask() {
-    let uuid = addTask().uuid
+    let taskId = addTask().task_id
 
-    const response = http.get(BASE_URI + '/tasks/' + uuid);
+    const response = http.get(BASE_URI + '/tasks/' + taskId);
 
     return response.json()
 }
 
 export function replaceTask() {
-    let uuid = getTask().uuid
+    let taskId = getTask().task_id
 
     const payload = JSON.stringify({
         title: 'Lorem ipsum dolor',
         description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dia',
     });
 
-    http.put(BASE_URI + '/tasks/' + uuid, payload);
+    http.put(BASE_URI + '/tasks/' + taskId, payload);
 
-    return uuid
+    return taskId
 }
 
 export function deleteTask() {
-    let uuid = replaceTask()
+    let taskId = replaceTask()
 
-    http.del(BASE_URI + '/tasks/' + uuid);
+    http.del(BASE_URI + '/tasks/' + taskId);
 }
