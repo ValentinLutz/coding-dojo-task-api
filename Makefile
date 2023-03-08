@@ -10,16 +10,12 @@ export FLYWAY_USER ?= test
 export FLYWAY_PASSWORD ?= test
 
 
-dep.oapi-codegen:: # Install oapi-codegen with go install
-	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.4
-
-
-app/incoming/taskapi/server.gen.go: dep.oapi-codegen api-definition/task_api.yaml api-definition/server.app.yaml ## Generate task api server from open api definition
+app/incoming/taskapi/server.gen.go: api-definition/task_api.yaml api-definition/server.app.yaml ## Generate task api server from open api definition
 	oapi-codegen --config api-definition/server.app.yaml \
 		api-definition/task_api.yaml
 
 
-app.run:: app/incoming/taskapi/server.gen.go ## Run the app
+app.run:: app/incoming/taskapi/server.gen.go  ## Run the app
 	cd app && \
 		go run main.go
 
