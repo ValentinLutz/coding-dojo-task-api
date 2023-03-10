@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func FromJSON(reader io.Reader) (TaskRequest, error) {
+func NewTaskRequestFromJSON(reader io.Reader) (TaskRequest, error) {
 	decoder := json.NewDecoder(reader)
 	var taskRequest TaskRequest
 	err := decoder.Decode(&taskRequest)

@@ -9,24 +9,22 @@ export PROFILE ?= none-local
 export FLYWAY_USER ?= test
 export FLYWAY_PASSWORD ?= test
 
+app.gen:: ## Run go generate
+	cd app && \
+		go generate ./...
 
-app/incoming/taskapi/server.gen.go: api-definition/task_api.yaml api-definition/server.app.yaml ## Generate task api server from open api definition
-	oapi-codegen --config api-definition/server.app.yaml \
-		api-definition/task_api.yaml
-
-
-app.run:: app/incoming/taskapi/server.gen.go  ## Run the app
+app.run:: app.gen## Run the app
 	cd app && \
 		go run main.go
 
-app.build:: app/incoming/orderapi/server.gen.go ## Build the app into an executable
+app.build:: app.gen ## Build the app into an executable
 	cd app && \
 		go build
 
 
-test.unit::  app/incoming/orderapi/server.gen.go ## Run the unit tests
+test.unit:: app.gen## Run the unit tests
 	cd app && \
-		go test -cover ./...
+		go test -race -cover ./...
 
 test.load:: ## Run load tests
 	k6 run test-load/script.js 
@@ -43,4 +41,4 @@ database.migrate:: ## Migrate database | PROFILE, FLYWAY_USER, FLYWAY_PASSWORD
 
 docker.up:: ## Start containers 
 	docker compose -f deployment-docker/docker-compose.yaml \
-		up --force-recreate
+		up --force-recreate --build

@@ -6,7 +6,7 @@ info:
 paths:
   /tasks:
     get:
-      operationId: getTasks
+      operationId: get_tasks
       summary: Returns a list of tasks
       responses:
         "200":
@@ -22,7 +22,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/error_response"
     post:
-      operationId: createTask
+      operationId: create_task
       summary: Create new task
       requestBody:
         required: true
@@ -46,7 +46,7 @@ paths:
 
   /tasks/{task_id}:
     get:
-      operationId: getTask
+      operationId: get_task
       summary: Return task with task id
       parameters:
         - in: path
@@ -75,7 +75,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/error_response"
     put:
-      operationId: updateTask
+      operationId: update_task
       summary: Replace task with task id
       parameters:
         - in: path
@@ -106,7 +106,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/error_response"
     delete:
-      operationId: deleteTask
+      operationId: delete_task
       summary: Delete task with task id
       parameters:
         - in: path
@@ -116,14 +116,8 @@ paths:
             type: string
             format: uuid
       responses:
-        "200":
-          description: OK
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/error_response"
+        "204":
+          description: No Content
         "500":
           description: Internal Server Error
           content:
@@ -138,7 +132,6 @@ components:
         - method
         - path
         - timestamp
-        - code
       properties:
         method:
           type: string
@@ -149,9 +142,6 @@ components:
         timestamp:
           type: string
           format: date-time
-        code:
-          type: integer
-          example: 9001
         message:
           type: string
           example: panic it's over 9000
