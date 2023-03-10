@@ -2,4 +2,4 @@ package: taskapi
 generate:
   models: true
 
-output: ../../../app/incoming/taskapi/types.gen.go
+output: app/incoming/taskapi/types.gen.go

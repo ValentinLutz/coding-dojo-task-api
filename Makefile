@@ -9,20 +9,26 @@ export PROFILE ?= none-local
 export FLYWAY_USER ?= test
 export FLYWAY_PASSWORD ?= test
 
-app.gen:: ## Run go generate
-	cd app && \
-		go generate ./...
 
-app.run:: app.gen## Run the app
+app/incoming/taskapi/server.gen.go: api-definition/task_api.yaml api-definition/server.app.yaml ## Generate task api server from open api definition
+	oapi-codegen --config api-definition/server.app.yaml \
+		api-definition/task_api.yaml
+
+app/incoming/taskapi/types.gen.go: api-definition/task_api.yaml api-definition/types.app.yaml ## Generate task api types from open api definition
+	oapi-codegen --config api-definition/types.app.yaml \
+		api-definition/task_api.yaml
+
+
+app.run:: app/incoming/taskapi/server.gen.go app/incoming/taskapi/types.gen.go  ## Run the app
 	cd app && \
 		go run main.go
 
-app.build:: app.gen ## Build the app into an executable
+app.build:: app/incoming/taskapi/server.gen.go app/incoming/taskapi/types.gen.go ## Build the app into an executable
 	cd app && \
 		go build
 
 
-test.unit:: app.gen## Run the unit tests
+test.unit::  app/incoming/taskapi/server.gen.go app/incoming/taskapi/types.gen.go ## Run the unit tests
 	cd app && \
 		go test -race -cover ./...
 
@@ -39,6 +45,6 @@ database.migrate:: ## Migrate database | PROFILE, FLYWAY_USER, FLYWAY_PASSWORD
 		-password=${FLYWAY_PASSWORD}
 
 
-docker.up:: ## Start containers 
+docker.up:: app/incoming/taskapi/server.gen.go app/incoming/taskapi/types.gen.go ## Start containers 
 	docker compose -f deployment-docker/docker-compose.yaml \
 		up --force-recreate --build
