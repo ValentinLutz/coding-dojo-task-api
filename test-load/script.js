@@ -1,58 +1,79 @@
+import { randomString } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 import http from 'k6/http';
+import { check } from "k6";
 
 export const BASE_URI = 'http://localhost:8080'
-export const VIRTUAL_USERS = 1000
-export const ITERATIONS = 10
 
 export const options = {
+    thresholds: {
+        http_req_duration: ['p(90) < 400', 'p(95) < 800'],
+      },
     scenarios: {
         delete_task: {
-            executor: 'per-vu-iterations',
-            exec: 'deleteTask',
-            vus: VIRTUAL_USERS,
-            iterations: ITERATIONS,
+            executor: 'constant-vus',
+            exec: 'fullScenario',
+            vus: 400,
+            duration: '30s',
         },
     },
 };
 
-export function getTasks() {
-    http.get(BASE_URI + '/tasks');
+export function fullScenario() {
+    const task_id = postTask().task_id;
+    getTask(task_id);
+    putTask(task_id);
+    getTasks();
+    deleteTask(task_id);
 }
 
-export function addTask() {
+export function getTasks() {
+    const response = http.get(BASE_URI + '/tasks');
+
+    check(response, {
+        'getOrders is status 200': (r) => r.status === 200,
+    });
+}
+
+export function postTask() {
     const payload = JSON.stringify({
-        title: 'Lorem ipsum dolor',
-        description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dia',
+        title: randomString(20),
+        description: randomString(400),
     });
 
     const response = http.post(BASE_URI + '/tasks', payload);
 
-    return response.json()
-}
-
-export function getTask() {
-    let taskId = addTask().task_id
-
-    const response = http.get(BASE_URI + '/tasks/' + taskId);
-
-    return response.json()
-}
-
-export function replaceTask() {
-    let taskId = getTask().task_id
-
-    const payload = JSON.stringify({
-        title: 'Lorem ipsum dolor',
-        description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dia',
+    check(response, {
+        'postTask is status 201': (r) => r.status === 201,
     });
 
-    http.put(BASE_URI + '/tasks/' + taskId, payload);
-
-    return taskId
+    return response.json();
 }
 
-export function deleteTask() {
-    let taskId = replaceTask()
+export function getTask(task_id) {
+    const response = http.get(BASE_URI + '/tasks/' + task_id);
 
-    http.del(BASE_URI + '/tasks/' + taskId);
+    check(response, {
+        'getTask is status 200': (r) => r.status === 200,
+    });
+}
+
+export function putTask(task_id) {
+    const payload = JSON.stringify({
+        title: randomString(40),
+        description: randomString(800),
+    });
+
+    const response = http.put(BASE_URI + '/tasks/' + task_id, payload);
+
+    check(response, {
+        'putTask is status 200': (r) => r.status === 200,
+    });
+}
+
+export function deleteTask(task_id) {
+    const response = http.del(BASE_URI + '/tasks/' + task_id);
+
+    check(response, {
+        'deleteTask is status 204': (r) => r.status === 204,
+    });
 }

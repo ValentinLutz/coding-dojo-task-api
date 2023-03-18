@@ -21,7 +21,8 @@
 		"vscode": {
 			"extensions": [
 				"usernamehw.errorlens",
-				"GitHub.copilot"
+				"GitHub.copilot",
+				"adpyke.vscode-sql-formatter"
 			]
 		}
 	},
