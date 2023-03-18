@@ -8,4 +8,4 @@ sudo ln -s ~/flyway-9.8.1/flyway /usr/local/bin
 
 # Install k6
 wget -qO- https://github.com/grafana/k6/releases/download/v0.43.1/k6-v0.43.1-linux-amd64.tar.gz \
-    | sudo tar xvz k6-v0.43.1-linux-amd64/k6 --strip-components=1 -C /usr/local/bin
+    | sudo tar xvz -C /usr/local/bin --strip-components=1 k6-v0.43.1-linux-amd64/k6 
