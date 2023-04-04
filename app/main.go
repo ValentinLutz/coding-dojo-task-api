@@ -82,6 +82,8 @@ func NewDatabase() *sqlx.DB {
 		log.Fatalf("failed to connect to database: %v\n", err)
 	}
 
+	db.SetConnMaxIdleTime(time.Minute * 5)
+	db.SetMaxIdleConns(100)
 	db.SetMaxOpenConns(100)
 
 	initTasksTable(db)
