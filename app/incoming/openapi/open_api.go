@@ -36,15 +36,15 @@ func (a *API) GetSwaggerUI(rw http.ResponseWriter, r *http.Request) {
 func (a *API) GetOrderAPISpec(rw http.ResponseWriter, r *http.Request) {
 	swagger, err := taskapi.GetSwagger()
 	if err != nil {
-		taskapi.HttpError(rw, r, http.StatusInternalServerError, err.Error())
+		taskapi.HttpErrorWithJsonBody(rw, r, http.StatusInternalServerError, err.Error())
 	}
 
 	json, err := swagger.MarshalJSON()
 	if err != nil {
-		taskapi.HttpError(rw, r, http.StatusInternalServerError, err.Error())
+		taskapi.HttpErrorWithJsonBody(rw, r, http.StatusInternalServerError, err.Error())
 	}
 	_, err = rw.Write(json)
 	if err != nil {
-		taskapi.HttpError(rw, r, http.StatusInternalServerError, err.Error())
+		taskapi.HttpErrorWithJsonBody(rw, r, http.StatusInternalServerError, err.Error())
 	}
 }

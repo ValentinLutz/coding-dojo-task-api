@@ -17,7 +17,8 @@ func New(taskService *service.Task) http.Handler {
 	}
 
 	errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
-		HttpError(w, r, http.StatusBadRequest, err.Error())
+		HttpErrorWithJsonBody(w, r, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	return HandlerWithOptions(taskApi, ChiServerOptions{ErrorHandlerFunc: errorHandler})
@@ -26,7 +27,7 @@ func New(taskService *service.Task) http.Handler {
 func (api *API) GetTasks(w http.ResponseWriter, r *http.Request) {
 	tasks, err := api.taskService.GetTasks()
 	if err != nil {
-		HttpError(w, r, http.StatusInternalServerError, err.Error())
+		HttpErrorWithJsonBody(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -35,22 +36,22 @@ func (api *API) GetTasks(w http.ResponseWriter, r *http.Request) {
 		tasksResponse = append(tasksResponse, NewTaskResponseFromTask(order))
 	}
 
-	HttpResponseWithBody(w, r, http.StatusOK, tasksResponse)
+	HttpResponseWithJsonBody(w, r, http.StatusOK, tasksResponse)
 }
 
 func (api *API) CreateTask(w http.ResponseWriter, r *http.Request) {
 	taskRequest, err := NewTaskRequestFromJSON(r.Body)
 	if err != nil {
-		HttpError(w, r, http.StatusInternalServerError, err.Error())
+		HttpErrorWithJsonBody(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 	task, err := api.taskService.CreateTask(taskRequest.ToNewTask())
 	if err != nil {
-		HttpError(w, r, http.StatusInternalServerError, err.Error())
+		HttpErrorWithJsonBody(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	HttpResponseWithBody(w, r, http.StatusCreated, NewTaskResponseFromTask(task))
+	HttpResponseWithJsonBody(w, r, http.StatusCreated, NewTaskResponseFromTask(task))
 }
 
 func (api *API) DeleteTask(w http.ResponseWriter, r *http.Request, uuid types.UUID) {
@@ -62,17 +63,17 @@ func (api *API) DeleteTask(w http.ResponseWriter, r *http.Request, uuid types.UU
 func (api *API) GetTask(w http.ResponseWriter, r *http.Request, taskId types.UUID) {
 	task, err := api.taskService.GetTask(taskId)
 	if err != nil {
-		HttpError(w, r, http.StatusNotFound, err.Error())
+		HttpErrorWithJsonBody(w, r, http.StatusNotFound, err.Error())
 		return
 	}
 
-	HttpResponseWithBody(w, r, http.StatusOK, NewTaskResponseFromTask(task))
+	HttpResponseWithJsonBody(w, r, http.StatusOK, NewTaskResponseFromTask(task))
 }
 
 func (api *API) UpdateTask(w http.ResponseWriter, r *http.Request, taskId types.UUID) {
 	taskRequest, err := NewTaskRequestFromJSON(r.Body)
 	if err != nil {
-		HttpError(w, r, http.StatusBadRequest, err.Error())
+		HttpErrorWithJsonBody(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 

@@ -10,10 +10,10 @@ func HttpResponse(w http.ResponseWriter, r *http.Request, statusCode int) {
 	w.WriteHeader(statusCode)
 }
 
-func HttpResponseWithBody(w http.ResponseWriter, r *http.Request, statusCode int, body any) {
+func HttpResponseWithJsonBody(w http.ResponseWriter, r *http.Request, statusCode int, body any) {
 	bytes, err := json.Marshal(body)
 	if err != nil {
-		HttpError(w, r, http.StatusInternalServerError, err.Error())
+		HttpErrorWithJsonBody(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -22,7 +22,7 @@ func HttpResponseWithBody(w http.ResponseWriter, r *http.Request, statusCode int
 	w.Write(bytes)
 }
 
-func HttpError(w http.ResponseWriter, r *http.Request, statusCode int, message string) {
+func HttpErrorWithJsonBody(w http.ResponseWriter, r *http.Request, statusCode int, message string) {
 	errorResponse := ErrorResponse{
 		Method:    r.Method,
 		Path:      r.RequestURI,
