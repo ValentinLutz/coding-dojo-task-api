@@ -55,12 +55,29 @@ func main() {
 }
 
 func NewDatabase() *sqlx.DB {
-	db, err := sqlx.Connect("postgres", "host=localhost port=5432 user=test password=test dbname=test sslmode=disable")
+	db, err := sqlx.Connect("postgres", "host=db port=5432 user=test password=password dbname=test sslmode=disable")
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
 
 	db.SetMaxOpenConns(100)
+
+	_, err = db.Exec("DROP TABLE IF EXISTS public.tasks")
+	if err != nil {
+		log.Fatalf("failed to drop table public.tasks: %v", err)
+	}
+	_, err = db.Exec(
+		`CREATE TABLE IF NOT EXISTS public.tasks
+		( 
+			task_id uuid PRIMARY KEY NOT NULL, 
+			title TEXT, 
+			description TEXT 
+		)`,
+	)
+	if err != nil {
+		log.Fatalf("failed to create table public.tasks: %v", err)
+	}
+
 	return db
 }
 

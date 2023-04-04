@@ -19,7 +19,7 @@ func NewPostres(database *sqlx.DB) *Postres {
 
 func (taskRepository *Postres) FindAll() ([]model.TaskEntity, error) {
 	var taskEntities []model.TaskEntity
-	err := taskRepository.database.Select(&taskEntities, "SELECT task_id, title, description FROM task_service.task")
+	err := taskRepository.database.Select(&taskEntities, "SELECT task_id, title, description FROM public.tasks")
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +28,7 @@ func (taskRepository *Postres) FindAll() ([]model.TaskEntity, error) {
 
 func (taskRepository *Postres) FindById(taskId uuid.UUID) (model.TaskEntity, error) {
 	var taskEntity model.TaskEntity
-	err := taskRepository.database.Get(&taskEntity, "SELECT task_id, title, description FROM task_service.task WHERE task_id = $1", taskId)
+	err := taskRepository.database.Get(&taskEntity, "SELECT task_id, title, description FROM public.tasks WHERE task_id = $1", taskId)
 	if err != nil {
 		return model.TaskEntity{}, err
 	}
@@ -36,7 +36,7 @@ func (taskRepository *Postres) FindById(taskId uuid.UUID) (model.TaskEntity, err
 }
 
 func (taskRepository *Postres) Save(taskEntity model.TaskEntity) (model.TaskEntity, error) {
-	_, err := taskRepository.database.NamedExec("INSERT INTO task_service.task (task_id, title, description) VALUES (:task_id, :title, :description)", taskEntity)
+	_, err := taskRepository.database.NamedExec("INSERT INTO public.tasks (task_id, title, description) VALUES (:task_id, :title, :description)", taskEntity)
 	if err != nil {
 		return model.TaskEntity{}, err
 	}
@@ -44,7 +44,7 @@ func (taskRepository *Postres) Save(taskEntity model.TaskEntity) (model.TaskEnti
 }
 
 func (taskRepository *Postres) Update(taskEntity model.TaskEntity) (model.TaskEntity, error) {
-	_, err := taskRepository.database.NamedExec("UPDATE task_service.task SET title = :title, description = :description WHERE task_id = :task_id", taskEntity)
+	_, err := taskRepository.database.NamedExec("UPDATE public.tasks SET title = :title, description = :description WHERE task_id = :task_id", taskEntity)
 	if err != nil {
 		return model.TaskEntity{}, err
 	}
@@ -52,7 +52,7 @@ func (taskRepository *Postres) Update(taskEntity model.TaskEntity) (model.TaskEn
 }
 
 func (taskRepository *Postres) DeleteById(taskId uuid.UUID) error {
-	_, err := taskRepository.database.Exec("DELETE FROM task_service.task WHERE task_id = $1", taskId)
+	_, err := taskRepository.database.Exec("DELETE FROM public.tasks WHERE task_id = $1", taskId)
 	if err != nil {
 		return err
 	}
