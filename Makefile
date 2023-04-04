@@ -10,11 +10,15 @@ export FLYWAY_USER ?= test
 export FLYWAY_PASSWORD ?= test
 
 
-app/incoming/taskapi/server.gen.go: api-definition/task_api.yaml api-definition/server.app.yaml ## Generate task api server from open api definition
+dep.oapi-codegen:: # Install oapi-codegen with go install
+	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.4
+
+
+app/incoming/taskapi/server.gen.go: dep.oapi-codegen api-definition/task_api.yaml api-definition/server.app.yaml ## Generate task api server from open api definition
 	oapi-codegen --config api-definition/server.app.yaml \
 		api-definition/task_api.yaml
 
-app/incoming/taskapi/types.gen.go: api-definition/task_api.yaml api-definition/types.app.yaml ## Generate task api types from open api definition
+app/incoming/taskapi/types.gen.go: dep.oapi-codegen api-definition/task_api.yaml api-definition/types.app.yaml ## Generate task api types from open api definition
 	oapi-codegen --config api-definition/types.app.yaml \
 		api-definition/task_api.yaml
 
@@ -33,16 +37,12 @@ test.unit::  app/incoming/taskapi/server.gen.go app/incoming/taskapi/types.gen.g
 		go test -race -cover ./...
 
 test.load:: ## Run load tests
-	k6 run test-load/script.js 
-
-
-database.migrate:: ## Migrate database | PROFILE, FLYWAY_USER, FLYWAY_PASSWORD
-	cd migration-database && \
-		flyway clean \
-		migrate \
-		-configFiles=${PROFILE}.properties \
-		-user=${FLYWAY_USER} \
-		-password=${FLYWAY_PASSWORD}
+	docker run -it \
+		--rm \
+		--volume ${PWD}/test-load:/k6 \
+		--network host  \
+        grafana/k6:0.39.0 \
+		run /k6/script.js \
 
 
 docker.up:: app/incoming/taskapi/server.gen.go app/incoming/taskapi/types.gen.go ## Start containers 
