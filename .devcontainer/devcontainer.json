@@ -22,7 +22,8 @@
 			"extensions": [
 				"usernamehw.errorlens",
 				"GitHub.copilot",
-				"adpyke.vscode-sql-formatter"
+				"adpyke.vscode-sql-formatter",
+				"humao.rest-client"
 			]
 		}
 	},

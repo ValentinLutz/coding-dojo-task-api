@@ -1,0 +1,53 @@
+### 200
+GET http://localhost:8080/tasks
+
+# [
+#   {
+#     "description": "with the greatest description ever",
+#     "task_id": "27cb4fe7-8ee6-426f-a9ee-ca20113f1aa7",
+#     "title": "the greatest task ever"
+#   },
+#   {
+#     "description": "with the greatest description ever",
+#     "task_id": "20a2e469-8cb4-45e7-9c05-673d55d432f1",
+#     "title": "the greatest task ever"
+#   }
+# ]
+
+### 201
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "the greatest task ever",
+  "description": "with the greatest description ever"
+}
+
+# {
+#   "description": "with the greatest description ever",
+#   "task_id": "27cb4fe7-8ee6-426f-a9ee-ca20113f1aa7",
+#   "title": "the greatest task ever"
+# }
+
+
+### 204
+DELETE http://localhost:8080/tasks/cad5ab5f-3f41-4576-a04d-d25530f6324c
+
+
+### 200
+GET http://localhost:8080/tasks/cad5ab5f-3f41-4576-a04d-d25530f6324c
+
+# {
+#   "description": "with the second greatest description ever",
+#   "task_id": "cad5ab5f-3f41-4576-a04d-d25530f6324c",
+#   "title": "the second greatest task ever"
+# }
+
+### 204
+PUT http://localhost:8080/tasks/cad5ab5f-3f41-4576-a04d-d25530f6324c
+Content-Type: application/json
+
+{
+  "title": "the second greatest task ever",
+  "description": "with the second greatest description ever"
+}

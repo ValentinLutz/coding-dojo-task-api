@@ -79,5 +79,5 @@ func (api *API) UpdateTask(w http.ResponseWriter, r *http.Request, taskId types.
 
 	api.taskService.UpdateTask(taskRequest.ToTask(taskId))
 
-	HttpResponse(w, r, http.StatusOK)
+	HttpResponse(w, r, http.StatusNoContent)
 }
