@@ -44,7 +44,13 @@ func (taskRepository *Postres) Save(taskEntity model.TaskEntity) (model.TaskEnti
 }
 
 func (taskRepository *Postres) Update(taskEntity model.TaskEntity) (model.TaskEntity, error) {
-	_, err := taskRepository.database.NamedExec("UPDATE public.tasks SET title = :title, description = :description WHERE task_id = :task_id", taskEntity)
+	_, err := taskRepository.database.NamedExec(`
+		INSERT INTO public.tasks (task_id, title, description) 
+		VALUES (:task_id, :title, :description)
+		ON CONFLICT (task_id) DO UPDATE
+		SET title = :title, description = :description`,
+		taskEntity,
+	)
 	if err != nil {
 		return model.TaskEntity{}, err
 	}
