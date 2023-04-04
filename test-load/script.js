@@ -6,15 +6,21 @@ export const BASE_URI = 'http://localhost:8080'
 
 export const options = {
     thresholds: {
-        http_req_duration: ['p(90) < 400', 'p(95) < 800'],
-      },
+        http_req_duration: ['p(90) < 400', 'p(95) < 600'],
+    },
     scenarios: {
-        delete_task: {
-            executor: 'constant-vus',
+        full_scenario_shared: {
+            executor: 'shared-iterations',
+            vus: 100,
             exec: 'fullScenario',
-            vus: 400,
-            duration: '30s',
+            iterations: 2000,
         },
+        // full_scenario_constant: {
+        //     executor: 'constant-vus',
+        //     exec: 'fullScenario',
+        //     vus: 400,
+        //     duration: '30s',
+        // },
     },
 };
 
@@ -66,7 +72,7 @@ export function putTask(task_id) {
     const response = http.put(BASE_URI + '/tasks/' + task_id, payload);
 
     check(response, {
-        'putTask is status 200': (r) => r.status === 200,
+        'putTask is status 204': (r) => r.status === 204,
     });
 }
 

@@ -49,7 +49,7 @@ func main() {
 
 	stopChannel := make(chan os.Signal, 1)
 	signal.Notify(stopChannel, syscall.SIGINT, syscall.SIGTERM)
-	log.Printf("received signal: %v", (<-stopChannel).String())
+	log.Printf("received signal: %v\n", (<-stopChannel).String())
 
 	server.Stop()
 }
@@ -57,15 +57,17 @@ func main() {
 func NewDatabase() *sqlx.DB {
 	db, err := sqlx.Connect("postgres", "host=db port=5432 user=test password=password dbname=test sslmode=disable")
 	if err != nil {
-		log.Fatalf("failed to connect to database: %v", err)
+		log.Fatalf("failed to connect to database: %v\n", err)
 	}
 
 	db.SetMaxOpenConns(100)
 
 	_, err = db.Exec("DROP TABLE IF EXISTS public.tasks")
 	if err != nil {
-		log.Fatalf("failed to drop table public.tasks: %v", err)
+		log.Fatalf("failed to drop table public.tasks: %v\n", err)
 	}
+	log.Println("dropped table public.tasks")
+
 	_, err = db.Exec(
 		`CREATE TABLE IF NOT EXISTS public.tasks
 		( 
@@ -75,8 +77,9 @@ func NewDatabase() *sqlx.DB {
 		)`,
 	)
 	if err != nil {
-		log.Fatalf("failed to create table public.tasks: %v", err)
+		log.Fatalf("failed to create table public.tasks: %v\n", err)
 	}
+	log.Println("created table public.tasks")
 
 	return db
 }

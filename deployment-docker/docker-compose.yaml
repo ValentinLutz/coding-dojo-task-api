@@ -39,7 +39,7 @@ services:
       resources:
         limits:
           memory: 512m
-          cpus: '1'
+          cpus: '2'
         reservations:
           memory: 256m
           cpus: '1'
