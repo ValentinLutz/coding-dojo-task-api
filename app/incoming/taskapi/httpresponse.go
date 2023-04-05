@@ -2,8 +2,8 @@ package taskapi
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
-	"time"
 )
 
 func HttpResponse(w http.ResponseWriter, r *http.Request, statusCode int) {
@@ -13,7 +13,7 @@ func HttpResponse(w http.ResponseWriter, r *http.Request, statusCode int) {
 func HttpResponseWithJsonBody(w http.ResponseWriter, r *http.Request, statusCode int, body any) {
 	bytes, err := json.Marshal(body)
 	if err != nil {
-		HttpErrorWithJsonBody(w, r, http.StatusInternalServerError, err.Error())
+		HttpError(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -22,18 +22,9 @@ func HttpResponseWithJsonBody(w http.ResponseWriter, r *http.Request, statusCode
 	w.Write(bytes)
 }
 
-func HttpErrorWithJsonBody(w http.ResponseWriter, r *http.Request, statusCode int, message string) {
-	errorResponse := ErrorResponse{
-		Method:    r.Method,
-		Path:      r.RequestURI,
-		Timestamp: time.Now().UTC(),
-		Message:   &message,
-	}
+func HttpError(w http.ResponseWriter, r *http.Request, statusCode int, message string) {
+	log.Printf("http error '%v' method '%v', path '%v', ", message, r.Method, r.RequestURI)
 
-	bytes, _ := json.Marshal(errorResponse)
-
-	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(statusCode)
-	w.Write(bytes)
 }

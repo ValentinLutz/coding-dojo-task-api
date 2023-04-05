@@ -17,7 +17,7 @@ func New(taskService *service.Task) http.Handler {
 	}
 
 	errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
-		HttpErrorWithJsonBody(w, r, http.StatusBadRequest, err.Error())
+		HttpError(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -27,7 +27,7 @@ func New(taskService *service.Task) http.Handler {
 func (api *API) GetTasks(w http.ResponseWriter, r *http.Request) {
 	tasks, err := api.taskService.GetTasks()
 	if err != nil {
-		HttpErrorWithJsonBody(w, r, http.StatusInternalServerError, err.Error())
+		HttpError(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -42,12 +42,12 @@ func (api *API) GetTasks(w http.ResponseWriter, r *http.Request) {
 func (api *API) CreateTask(w http.ResponseWriter, r *http.Request) {
 	taskRequest, err := NewTaskRequestFromJSON(r.Body)
 	if err != nil {
-		HttpErrorWithJsonBody(w, r, http.StatusInternalServerError, err.Error())
+		HttpError(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 	task, err := api.taskService.CreateTask(taskRequest.ToNewTask())
 	if err != nil {
-		HttpErrorWithJsonBody(w, r, http.StatusInternalServerError, err.Error())
+		HttpError(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -63,7 +63,7 @@ func (api *API) DeleteTask(w http.ResponseWriter, r *http.Request, uuid types.UU
 func (api *API) GetTask(w http.ResponseWriter, r *http.Request, taskId types.UUID) {
 	task, err := api.taskService.GetTask(taskId)
 	if err != nil {
-		HttpErrorWithJsonBody(w, r, http.StatusNotFound, err.Error())
+		HttpError(w, r, http.StatusNotFound, err.Error())
 		return
 	}
 
@@ -73,7 +73,7 @@ func (api *API) GetTask(w http.ResponseWriter, r *http.Request, taskId types.UUI
 func (api *API) UpdateTask(w http.ResponseWriter, r *http.Request, taskId types.UUID) {
 	taskRequest, err := NewTaskRequestFromJSON(r.Body)
 	if err != nil {
-		HttpErrorWithJsonBody(w, r, http.StatusBadRequest, err.Error())
+		HttpError(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
