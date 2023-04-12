@@ -27,7 +27,7 @@ func (taskRepository *Postres) FindAll() ([]model.TaskEntity, error) {
 	return taskEntities, nil
 }
 
-func (taskRepository *Postres) FindById(taskId uuid.UUID) (model.TaskEntity, error) {
+func (taskRepository *Postres) FindByTaskId(taskId uuid.UUID) (model.TaskEntity, error) {
 	var taskEntity model.TaskEntity
 	err := taskRepository.database.Get(&taskEntity, "SELECT task_id, title, description FROM public.tasks WHERE task_id = $1", taskId)
 	if err != nil {
@@ -66,11 +66,20 @@ func (taskRepository *Postres) Update(taskEntity model.TaskEntity) (model.TaskEn
 	return taskEntity, nil
 }
 
-func (taskRepository *Postres) DeleteById(taskId uuid.UUID) error {
-	_, err := taskRepository.database.Exec("DELETE FROM public.tasks WHERE task_id = $1", taskId)
+func (taskRepository *Postres) DeleteByTaskId(taskId uuid.UUID) error {
+	result, err := taskRepository.database.Exec("DELETE FROM public.tasks WHERE task_id = $1", taskId)
 	if err != nil {
 		return err
 	}
+
+	affectedRows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if affectedRows == 0 {
+		return port.ErrTaskNotFound
+	}
+
 	return nil
 
 }

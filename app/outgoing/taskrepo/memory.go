@@ -18,19 +18,22 @@ func NewMemory() *Memory {
 }
 
 func (taskRepository *Memory) FindAll() ([]model.TaskEntity, error) {
-	var tasks []model.TaskEntity
 	taskRepository.mutex.RLock()
+	defer taskRepository.mutex.RUnlock()
+
+	var tasks []model.TaskEntity
 	for _, entity := range taskRepository.tasks {
 		tasks = append(tasks, entity)
 	}
-	taskRepository.mutex.RUnlock()
+
 	return tasks, nil
 }
 
-func (taskRepository *Memory) FindById(taskId uuid.UUID) (model.TaskEntity, error) {
+func (taskRepository *Memory) FindByTaskId(taskId uuid.UUID) (model.TaskEntity, error) {
 	taskRepository.mutex.RLock()
+	defer taskRepository.mutex.RUnlock()
+
 	entity, ok := taskRepository.tasks[taskId]
-	taskRepository.mutex.RUnlock()
 	if !ok {
 		return model.TaskEntity{}, port.ErrTaskNotFound
 	}
@@ -39,22 +42,34 @@ func (taskRepository *Memory) FindById(taskId uuid.UUID) (model.TaskEntity, erro
 
 func (taskRepository *Memory) Save(taskEntity model.TaskEntity) (model.TaskEntity, error) {
 	taskRepository.mutex.Lock()
+	defer taskRepository.mutex.Unlock()
+
 	taskRepository.tasks[taskEntity.TaskId] = taskEntity
-	taskRepository.mutex.Unlock()
 	return taskEntity, nil
 }
 
 func (taskRepository *Memory) Update(taskEntity model.TaskEntity) (model.TaskEntity, error) {
+	taskRepository.mutex.Lock()
+	defer taskRepository.mutex.Unlock()
+
 	_, ok := taskRepository.tasks[taskEntity.TaskId]
 	if !ok {
 		return model.TaskEntity{}, port.ErrTaskNotFound
 	}
-	return taskRepository.Save(taskEntity)
+
+	taskRepository.tasks[taskEntity.TaskId] = taskEntity
+	return taskEntity, nil
 }
 
-func (taskRepository *Memory) DeleteById(taskId uuid.UUID) error {
+func (taskRepository *Memory) DeleteByTaskId(taskId uuid.UUID) error {
 	taskRepository.mutex.Lock()
+	defer taskRepository.mutex.Unlock()
+
+	_, ok := taskRepository.tasks[taskId]
+	if !ok {
+		return port.ErrTaskNotFound
+	}
+
 	delete(taskRepository.tasks, taskId)
-	taskRepository.mutex.Unlock()
 	return nil
 }

@@ -8,8 +8,8 @@ import (
 
 type TaskRepository interface {
 	FindAll() ([]model.TaskEntity, error)
-	FindById(taskId uuid.UUID) (model.TaskEntity, error)
+	FindByTaskId(taskId uuid.UUID) (model.TaskEntity, error)
 	Save(taskEntity model.TaskEntity) (model.TaskEntity, error)
 	Update(taskEntity model.TaskEntity) (model.TaskEntity, error)
-	DeleteById(taskId uuid.UUID) error
+	DeleteByTaskId(taskId uuid.UUID) error
 }

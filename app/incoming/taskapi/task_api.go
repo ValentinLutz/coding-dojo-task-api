@@ -57,7 +57,15 @@ func (api *API) CreateTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) DeleteTask(w http.ResponseWriter, r *http.Request, uuid types.UUID) {
-	api.taskService.DeleteTask(uuid)
+	err := api.taskService.DeleteTask(uuid)
+	if errors.Is(err, port.ErrTaskNotFound) {
+		HttpError(w, r, http.StatusNotFound, err.Error())
+		return
+	}
+	if err != nil {
+		HttpError(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	HttpResponse(w, r, http.StatusNoContent)
 }

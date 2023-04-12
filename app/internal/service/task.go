@@ -30,11 +30,11 @@ func (taskService *Task) CreateTask(taskEntity model.TaskEntity) (model.TaskEnti
 }
 
 func (taskService *Task) DeleteTask(taskId uuid.UUID) error {
-	return taskService.taskRepository.DeleteById(taskId)
+	return taskService.taskRepository.DeleteByTaskId(taskId)
 }
 
 func (taskService *Task) GetTask(uuid uuid.UUID) (model.TaskEntity, error) {
-	taskEntity, err := taskService.taskRepository.FindById(uuid)
+	taskEntity, err := taskService.taskRepository.FindByTaskId(uuid)
 	if err != nil {
 		return model.TaskEntity{}, err
 	}
