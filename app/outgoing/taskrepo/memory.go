@@ -2,7 +2,7 @@ package taskrepo
 
 import (
 	"app/internal/model"
-	"fmt"
+	"app/internal/port"
 	"sync"
 
 	"github.com/google/uuid"
@@ -29,10 +29,10 @@ func (taskRepository *Memory) FindAll() ([]model.TaskEntity, error) {
 
 func (taskRepository *Memory) FindById(taskId uuid.UUID) (model.TaskEntity, error) {
 	taskRepository.mutex.RLock()
-	entity, hasKey := taskRepository.tasks[taskId]
+	entity, ok := taskRepository.tasks[taskId]
 	taskRepository.mutex.RUnlock()
-	if !hasKey {
-		return model.TaskEntity{}, fmt.Errorf("could not find task %s", taskId.String())
+	if !ok {
+		return model.TaskEntity{}, port.ErrTaskNotFound
 	}
 	return entity, nil
 }
@@ -45,6 +45,10 @@ func (taskRepository *Memory) Save(taskEntity model.TaskEntity) (model.TaskEntit
 }
 
 func (taskRepository *Memory) Update(taskEntity model.TaskEntity) (model.TaskEntity, error) {
+	_, ok := taskRepository.tasks[taskEntity.TaskId]
+	if !ok {
+		return model.TaskEntity{}, port.ErrTaskNotFound
+	}
 	return taskRepository.Save(taskEntity)
 }
 

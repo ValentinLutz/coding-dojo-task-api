@@ -1,7 +1,9 @@
 package taskapi
 
 import (
+	"app/internal/port"
 	"app/internal/service"
+	"errors"
 	"net/http"
 
 	"github.com/deepmap/oapi-codegen/pkg/types"
@@ -77,7 +79,15 @@ func (api *API) UpdateTask(w http.ResponseWriter, r *http.Request, taskId types.
 		return
 	}
 
-	api.taskService.UpdateTask(taskRequest.ToTask(taskId))
+	_, err = api.taskService.UpdateTask(taskRequest.ToTask(taskId))
+	if errors.Is(err, port.ErrTaskNotFound) {
+		HttpError(w, r, http.StatusNotFound, err.Error())
+		return
+	}
+	if err != nil {
+		HttpError(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	HttpResponse(w, r, http.StatusNoContent)
 }

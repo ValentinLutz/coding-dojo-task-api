@@ -2,6 +2,7 @@ package taskrepo
 
 import (
 	"app/internal/model"
+	"app/internal/port"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -44,16 +45,24 @@ func (taskRepository *Postres) Save(taskEntity model.TaskEntity) (model.TaskEnti
 }
 
 func (taskRepository *Postres) Update(taskEntity model.TaskEntity) (model.TaskEntity, error) {
-	_, err := taskRepository.database.NamedExec(`
-		INSERT INTO public.tasks (task_id, title, description) 
-		VALUES (:task_id, :title, :description)
-		ON CONFLICT (task_id) DO UPDATE
-		SET title = :title, description = :description`,
+	result, err := taskRepository.database.NamedExec(`
+		UPDATE public.tasks
+		SET title = :title, description = :description
+		WHERE task_id = :task_id`,
 		taskEntity,
 	)
 	if err != nil {
 		return model.TaskEntity{}, err
 	}
+
+	affectedRows, err := result.RowsAffected()
+	if err != nil {
+		return model.TaskEntity{}, err
+	}
+	if affectedRows == 0 {
+		return model.TaskEntity{}, port.ErrTaskNotFound
+	}
+
 	return taskEntity, nil
 }
 
