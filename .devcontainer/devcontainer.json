@@ -20,6 +20,7 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
+				"golang.go",
 				"usernamehw.errorlens",
 				"GitHub.copilot",
 				"adpyke.vscode-sql-formatter",
