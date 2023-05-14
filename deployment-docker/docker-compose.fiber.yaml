@@ -10,7 +10,7 @@ services:
       - 8080:8080
     environment:
       PORT: 8080
-      USE_IN_MEMORY: true
+      USE_IN_MEMORY: false
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
       POSTGRES_DATABASE: test

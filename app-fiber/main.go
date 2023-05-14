@@ -6,6 +6,7 @@ import (
 	"appfiber/internal/port"
 	"appfiber/internal/service"
 	"appfiber/outgoing/taskrepo"
+	"context"
 	"log"
 	"os/signal"
 	"strconv"
@@ -13,11 +14,9 @@ import (
 
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func main() {
@@ -61,7 +60,7 @@ func main() {
 	app.Shutdown()
 }
 
-func NewDatabase() *sqlx.DB {
+func NewDatabase() *pgxpool.Pool {
 	databaseHost := os.Getenv("POSTGRES_HOST")
 	databasePort := os.Getenv("POSTGRES_PORT")
 	databaseUser := os.Getenv("POSTGRES_USER")
@@ -69,32 +68,33 @@ func NewDatabase() *sqlx.DB {
 	databaseName := os.Getenv("POSTGRES_DATABASE")
 
 	psqlInfo := fmt.Sprintf(
-		"host=%v port=%v user=%v password=%v dbname=%v sslmode=disable",
+		"host=%v port=%v user=%v password=%v dbname=%v sslmode=disable pool_max_conns=100",
 		databaseHost, databasePort, databaseUser, databasePassword, databaseName,
 	)
 
-	db, err := sqlx.Connect("postgres", psqlInfo)
+	pgxConfig, err := pgxpool.ParseConfig(psqlInfo)
+	if err != nil {
+		log.Fatalf("failed to parse pgx config: %v\n", err)
+	}
+	db, err := pgxpool.NewWithConfig(context.Background(), pgxConfig)
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v\n", err)
 	}
-
-	db.SetConnMaxIdleTime(time.Minute * 5)
-	db.SetMaxIdleConns(100)
-	db.SetMaxOpenConns(100)
 
 	initTasksTable(db)
 
 	return db
 }
 
-func initTasksTable(db *sqlx.DB) {
-	_, err := db.Exec("DROP TABLE IF EXISTS public.tasks")
+func initTasksTable(db *pgxpool.Pool) {
+	_, err := db.Exec(context.Background(), "DROP TABLE IF EXISTS public.tasks")
 	if err != nil {
 		log.Fatalf("failed to drop table public.tasks: %v\n", err)
 	}
 	log.Println("dropped table public.tasks")
 
 	_, err = db.Exec(
+		context.Background(),
 		`CREATE TABLE IF NOT EXISTS public.tasks
 		( 
 			task_id UUID PRIMARY KEY NOT NULL, 
