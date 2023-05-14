@@ -1,0 +1,6 @@
+package: taskapi
+generate:
+  models: true
+  embedded-spec: true
+
+output: app-fiber/incoming/taskapi/types.gen.go

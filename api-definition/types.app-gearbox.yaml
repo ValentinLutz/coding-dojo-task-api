@@ -1,5 +1,0 @@
-package: taskapi
-generate:
-  models: true
-
-output: app-gearbox/incoming/taskapi/types.gen.go

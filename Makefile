@@ -31,16 +31,16 @@ docker.chi.up:: app-chi/incoming/taskapi/server.gen.go app-chi/incoming/taskapi/
 	docker compose -f deployment-docker/docker-compose.chi.yaml \
 		up --force-recreate --build
 
-app-gearbox/incoming/taskapi/types.gen.go: dep.oapi-codegen api-definition/task_api.yaml api-definition/types.app-gearbox.yaml ## Generate task api types from open api definition
-	oapi-codegen --config api-definition/types.app-gearbox.yaml \
+app-fiber/incoming/taskapi/types.gen.go: dep.oapi-codegen api-definition/task_api.yaml api-definition/types.app-fiber.yaml ## Generate task api types from open api definition
+	oapi-codegen --config api-definition/types.app-fiber.yaml \
 		api-definition/task_api.yaml
 
-app.gearbox.run:: app-gearbox/incoming/taskapi/types.gen.go  ## Run the app
-	cd app-gearbox && \
+app.fiber.run:: app-fiber/incoming/taskapi/types.gen.go  ## Run the app
+	cd app-fiber && \
 		go run -race main.go
 
-docker.gearbox.up:: app-gearbox/incoming/taskapi/types.gen.go ## Start containers 
-	docker compose -f deployment-docker/docker-compose.gearbox.yaml \
+docker.fiber.up:: app-fiber/incoming/taskapi/types.gen.go ## Start containers 
+	docker compose -f deployment-docker/docker-compose.fiber.yaml \
 		up --force-recreate --build
 
 test.load:: ## Run load tests
