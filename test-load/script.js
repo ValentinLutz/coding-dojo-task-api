@@ -46,7 +46,13 @@ export function postTask() {
         description: randomString(400),
     });
 
-    const response = http.post(BASE_URI + '/tasks', payload);
+    const params = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    const response = http.post(BASE_URI + '/tasks', payload, params);
 
     check(response, {
         'postTask is status 201': (r) => r.status === 201,
@@ -69,7 +75,13 @@ export function putTask(task_id) {
         description: randomString(800),
     });
 
-    const response = http.put(BASE_URI + '/tasks/' + task_id, payload);
+    const params = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    const response = http.put(BASE_URI + '/tasks/' + task_id, payload, params);
 
     check(response, {
         'putTask is status 204': (r) => r.status === 204,

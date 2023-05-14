@@ -1,0 +1,5 @@
+package: taskapi
+generate:
+  models: true
+
+output: app-chi/incoming/taskapi/types.gen.go

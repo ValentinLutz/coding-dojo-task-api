@@ -1,0 +1,6 @@
+package: taskapi
+generate:
+  chi-server: true
+  embedded-spec: true
+
+output: app-chi/incoming/taskapi/server.gen.go
