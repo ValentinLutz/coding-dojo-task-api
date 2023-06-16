@@ -1,8 +1,8 @@
 FROM golang:1.20.4-alpine3.17 AS builder
 WORKDIR /build
-COPY ./app-chi/go.mod ./app-chi/go.sum ./
+COPY ./app/go.mod ./app/go.sum ./
 RUN go mod download
-COPY ./app-chi ./
+COPY ./app ./
 RUN go build -o app
 
 FROM alpine:3.17

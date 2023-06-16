@@ -3,7 +3,7 @@ services:
   app:
     build:
       context: ../
-      dockerfile: app-chi/Dockerfile
+      dockerfile: app/Dockerfile
     image: harbor.doubleslash.de/coding-dojo-stuttgart/task-app-go-chi:latest
     container_name: coding_dojo_app
     ports:

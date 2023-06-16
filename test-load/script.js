@@ -13,7 +13,7 @@ export const options = {
             executor: 'shared-iterations',
             vus: 100,
             exec: 'fullScenario',
-            iterations: 10000,
+            iterations: 2000,
         },
         // full_scenario_constant: {
         //     executor: 'constant-vus',

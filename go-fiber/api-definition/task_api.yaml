@@ -1,0 +1,127 @@
+openapi: 3.0.3
+info:
+  title: Task API
+  version: 0.0.1
+  
+# servers:
+#   - url: http://localhost:8080
+
+paths:
+  /tasks:
+    get:
+      operationId: get_tasks
+      summary: Returns a list of tasks
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tasks_response"
+    post:
+      operationId: create_task
+      summary: Create new task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/task_request"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/task_response"
+
+  /tasks/{task_id}:
+    get:
+      operationId: get_task
+      summary: Return task with task id
+      parameters:
+        - in: path
+          name: task_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/task_response"
+        "404":
+          description: Not Found
+          
+    put:
+      operationId: update_task
+      summary: Replace task with task id
+      parameters:
+        - in: path
+          name: task_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/task_request"
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+
+    delete:
+      operationId: delete_task
+      summary: Delete task with task id
+      parameters:
+        - in: path
+          name: task_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+
+components:
+  schemas:
+    task_response:
+      properties:
+        title:
+          type: string
+          example: Lorem ipsum dolor
+        description:
+          type: string
+          example: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dia
+        task_id:
+          type: string
+          example: 4f6b3bf7-21a7-4b43-ba74-e9e442e875a2
+          format: uuid
+      required:
+        - task_id
+        - title
+    tasks_response:
+      type: array
+      items:
+        $ref: "#/components/schemas/task_response"
+    task_request:
+      properties:
+        title:
+          type: string
+          example: Lorem ipsum dolor
+        description:
+          type: string
+          example: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dia
+      required:
+        - title

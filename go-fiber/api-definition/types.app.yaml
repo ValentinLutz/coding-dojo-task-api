@@ -3,4 +3,4 @@ generate:
   models: true
   embedded-spec: true
 
-output: app-fiber/incoming/taskapi/types.gen.go
+output: app/incoming/taskapi/types.gen.go

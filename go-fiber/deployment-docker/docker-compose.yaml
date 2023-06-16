@@ -3,7 +3,7 @@ services:
   app:
     build:
       context: ../
-      dockerfile: app-fiber/Dockerfile
+      dockerfile: app/Dockerfile
     image: harbor.doubleslash.de/coding-dojo-stuttgart/task-app-go-fiber:latest
     container_name: coding_dojo_app
     ports:
