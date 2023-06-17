@@ -23,13 +23,6 @@ Content-Type: application/json
   "description": "with the greatest description ever"
 }
 
-# {
-#   "description": "with the greatest description ever",
-#   "task_id": "27cb4fe7-8ee6-426f-a9ee-ca20113f1aa7",
-#   "title": "the greatest task ever"
-# }
-
-
 ### 204
 DELETE http://localhost:8080/tasks/cad5ab5f-3f41-4576-a04d-d25530f6324c
 
