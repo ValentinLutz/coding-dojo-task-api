@@ -5,7 +5,7 @@ COPY app/mvnw ./
 COPY app/pom.xml ./
 RUN ./mvnw dependency:go-offline && ./mvnw quarkus:go-offline
 
-COPY app/ ./
+COPY app/src ./src
 RUN ./mvnw package -offline
 
 
