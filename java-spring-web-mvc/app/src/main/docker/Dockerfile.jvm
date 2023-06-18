@@ -1,0 +1,20 @@
+FROM registry.access.redhat.com/ubi8/openjdk-17:1.15 AS builder
+WORKDIR /build
+COPY app/.mvn/ ./.mvn
+COPY app/mvnw ./
+COPY app/pom.xml ./
+RUN ./mvnw dependency:go-offline
+
+COPY app/src ./src
+RUN ./mvnw package -offline
+
+
+FROM registry.access.redhat.com/ubi8/openjdk-17:1.15
+ENV LANGUAGE='en_US:en'
+
+COPY --from=builder --chown=185 /build/target/appspring-1.0.0-SNAPSHOT.jar /deployments/spring-run.jar
+
+EXPOSE 8080
+USER 185
+ENV JAVA_APP_JAR="/deployments/spring-run.jar"
+
