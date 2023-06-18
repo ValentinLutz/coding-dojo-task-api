@@ -9,27 +9,16 @@ export const options = {
         http_req_duration: ['p(90) < 400', 'p(95) < 600'],
     },
     scenarios: {
-        // full_scenario_shared: {
-        //     executor: 'shared-iterations',
-        //     vus: 10,
-        //     exec: 'fullScenario',
-        //     iterations: 2000,
-        // },
-        // full_scenario_constant: {
-        //     executor: 'constant-vus',
-        //     exec: 'fullScenario',
-        //     vus: 400,
-        //     duration: '30s',
-        // },
-        full_scenario: {
-            executor: 'ramping-vus',
+        full_scenario_ramping_arrival_rate: {
             exec: 'fullScenario',
-            startVUs: 0,
+            executor: 'ramping-arrival-rate',
+            startRate: 0,
+            timeUnit: '1s',
+            preAllocatedVUs: 100,
+            maxVUs: 100,
             stages: [
-                {duration: '1m', target: 100},
-                {duration: '1m', target: 0},
+                {target: 4000, duration: '8m'},
             ],
-            gracefulRampDown: '20s',
         },
     },
 };
