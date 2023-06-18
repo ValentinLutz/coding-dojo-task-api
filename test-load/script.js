@@ -43,7 +43,13 @@ export function fullScenario() {
 }
 
 export function getTasks() {
-    const response = http.get(`${BASE_URI}/tasks`);
+    const params = {
+        tags: {
+            name: `${BASE_URI}/tasks`
+        },
+    };
+
+    const response = http.get(`${BASE_URI}/tasks`, params);
 
     check(response, {
         'getOrders is status 200': (r) => r.status === 200,
@@ -61,7 +67,7 @@ export function postTask() {
             'Content-Type': 'application/json',
         },
         tags: {
-            name: `${BASE_URI}/tasks/{taskId}`
+            name: `${BASE_URI}/tasks`
         },
     };
 
