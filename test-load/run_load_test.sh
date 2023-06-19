@@ -15,43 +15,22 @@ export APP_NAME=$app_name
 export USE_MEMORY=$use_memory
 
 # start the app
-docker compose -f docker-compose.test.yaml up -d \
+docker compose -f docker-compose.app.yaml up -d \
   --force-recreate \
   --wait
 # wait for the app to start
 sleep 30
 
-# run the load test
-# docker run -it \
-#     --rm \
-#     --volume ${PWD}:/k6 \
-# 		--network host \
-# 		--env K6_CLOUD_TOKEN=XXX \
-# 		grafana/k6:0.44.1 \
-# 		run --out=cloud /k6/$script_name
-
-#docker run -it \
-#   --rm \
-#   --volume ${PWD}:/k6 \
-#		--network host \
-#		grafana/k6:0.44.1 \
-#		run /k6/$script_name
-
 docker run -it \
   --rm \
-  --volume ${PWD}:/k6 \
+  --volume ./script.js:/k6/script.js \
   --network host \
-  --env K6_INFLUXDB_ORGANIZATION=monke \
-  --env K6_INFLUXDB_BUCKET=coding_dojo \
-  --env K6_INFLUXDB_TOKEN=test \
-  --env K6_INFLUXDB_ADDR=http://localhost:8086 \
-  --env K6_INFLUXDB_CONCURRENT_WRITES=20 \
-  --env K6_INFLUXDB_PUSH_INTERVAL=10s \
-  xk6-influxdb:local \
+  --env K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true \
+  grafana/k6:0.45.0 \
   run \
+  --out experimental-prometheus-rw \
   --tag testid=$test_id \
-  -o xk6-influxdb \
   /k6/script.js
 
 # stop the app
-docker compose -f docker-compose.test.yaml down
+docker compose -f docker-compose.app.yaml down

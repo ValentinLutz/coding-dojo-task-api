@@ -1,12 +1,8 @@
 #/bin/bash
 set -e
 
-docker compose -f docker-compose.yaml up -d \
+docker compose -f docker-compose.test.yaml up -d \
   --wait
-
-docker build \
-  -f xk6-influxdb/Dockerfile \
-  -t xk6-influxdb:local .
 
 for use_memory in "true" "false"
 do

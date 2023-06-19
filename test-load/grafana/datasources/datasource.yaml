@@ -1,13 +1,7 @@
 apiVersion: 1
 
 datasources:
-  - name: InfluxDB
-    type: influxdb
-    url: http://influxdb:8086
+  - name: prometheus
+    type: prometheus
+    url: http://prometheus:9090
     isDefault: true
-    secureJsonData:
-      token: test
-    jsonData:
-      version: Flux
-      organization: monke
-      defaultBucket: coding_dojo

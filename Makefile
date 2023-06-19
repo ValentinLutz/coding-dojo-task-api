@@ -9,3 +9,11 @@ build.images:: ## Build docker images
 		docker compose -f go-fiber/deployment-docker/docker-compose.yaml build && \
 		docker compose -f java-quarkus-reactive/deployment-docker/docker-compose.yaml build && \
 		docker compose -f java-spring-web-mvc/deployment-docker/docker-compose.yaml build
+
+test.load:: ## Run load tests
+	cd test-load && \
+		bash run_load_tests.sh
+
+stop.container:: ## Stop docker containers
+	docker compose -f test-load/docker-compose.app.yaml down && \
+		docker compose -f test-load/docker-compose.test.yaml down
