@@ -28,7 +28,7 @@ public class TaskApi {
   @PostMapping(consumes = "application/json", produces = "application/json")
   public ResponseEntity<TaskResponse> postTask(@RequestBody final TaskRequest taskRequest) {
     TaskResponse taskResponse = TaskResponse.fromTask(taskRepoPort.save(TaskRequest.toTask(taskRequest)));
-    return ResponseEntity.ok(taskResponse);
+    return ResponseEntity.status(201).body(taskResponse);
   }
 
   @GetMapping(path = "/{taskId}", produces = "application/json")
@@ -42,8 +42,8 @@ public class TaskApi {
 
   @PutMapping(path = "/{taskId}", consumes = "application/json", produces = "application/json")
   public ResponseEntity<TaskResponse> putTask(@PathVariable final UUID taskId, @RequestBody final TaskRequest taskRequest) {
-    TaskResponse taskResponse = TaskResponse.fromTask(taskRepoPort.save(TaskRequest.toTask(taskId, taskRequest)));
-    return ResponseEntity.ok(taskResponse);
+    taskRepoPort.save(TaskRequest.toTask(taskId, taskRequest));
+    return ResponseEntity.noContent().build();
   }
 
   @DeleteMapping(path = "/{taskId}", produces = "application/json")
