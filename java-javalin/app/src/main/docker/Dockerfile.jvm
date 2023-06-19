@@ -1,0 +1,13 @@
+FROM amazoncorretto:17-alpine3.17-jdk AS builder
+WORKDIR /build
+COPY app/.mvn/ ./.mvn
+COPY app/mvnw ./
+COPY app/pom.xml ./
+RUN ./mvnw dependency:go-offline
+COPY app/src ./src
+RUN ./mvnw package -offline
+
+
+FROM amazoncorretto:17-alpine3.17-jdk
+COPY --from=builder /build/target/appjavalinn-1.0.0-SNAPSHOT.jar /deployments/javalin-run.jar
+CMD ["java", "-jar", "/deployments/javalin-run.jar"]

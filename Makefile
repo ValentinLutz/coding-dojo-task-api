@@ -8,7 +8,8 @@ build.images:: ## Build docker images
 	docker compose -f go-chi/deployment-docker/docker-compose.yaml build && \
 		docker compose -f go-fiber/deployment-docker/docker-compose.yaml build && \
 		docker compose -f java-quarkus-reactive/deployment-docker/docker-compose.yaml build && \
-		docker compose -f java-spring-web-mvc/deployment-docker/docker-compose.yaml build
+		docker compose -f java-spring-web-mvc/deployment-docker/docker-compose.yaml build && \
+		docker compose -f java-javalin/deployment-docker/docker-compose.yaml build
 
 test.load:: ## Run load tests
 	cd test-load && \
