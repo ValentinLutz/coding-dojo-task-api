@@ -1,7 +1,6 @@
 package science.monke.outgoing;
 
 import java.util.UUID;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

@@ -1,9 +1,7 @@
 package science.monke.incoming;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.UUID;
 import science.monke.outgoing.Task;
 
 public record TaskResponse(
