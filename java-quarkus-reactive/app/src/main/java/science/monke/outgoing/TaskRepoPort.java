@@ -13,5 +13,5 @@ public interface TaskRepoPort {
 
   Uni<Task> update(final Task task);
 
-  Uni<Void> delete(final UUID taskId);
+  Uni<Boolean> delete(final UUID taskId);
 }

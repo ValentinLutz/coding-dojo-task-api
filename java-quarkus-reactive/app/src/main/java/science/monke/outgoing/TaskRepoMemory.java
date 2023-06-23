@@ -6,6 +6,7 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,10 +34,10 @@ public class TaskRepoMemory implements TaskRepoPort {
   }
 
   public Uni<Task> update(final Task task) {
-    return save(task);
+    return Uni.createFrom().item(tasks.replace(task.taskId, task));
   }
 
-  public Uni<Void> delete(final UUID taskId) {
-    return Uni.createFrom().item(tasks.remove(taskId)).onItem().transform(task -> null);
+  public Uni<Boolean> delete(final UUID taskId) {
+    return Uni.createFrom().item(tasks.remove(taskId)).onItem().transform(Objects::nonNull);
   }
 }

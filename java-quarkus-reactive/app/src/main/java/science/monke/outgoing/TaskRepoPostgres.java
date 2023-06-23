@@ -72,14 +72,14 @@ public class TaskRepoPostgres implements TaskRepoPort {
         .preparedQuery("UPDATE public.tasks SET title = $1, description = $2 WHERE task_id = $3")
         .execute(Tuple.of(task.title, task.description, task.taskId))
         .onItem()
-        .transform(rowSet -> task);
+        .transform(rowSet -> rowSet.rowCount() > 0 ? task : null);
   }
 
-  public Uni<Void> delete(final UUID taskId) {
+  public Uni<Boolean> delete(final UUID taskId) {
     return pgPool
         .preparedQuery("DELETE FROM public.tasks WHERE task_id = $1")
         .execute(Tuple.of(taskId))
         .onItem()
-        .transform(rowSet -> null);
+        .transform(rowSet -> rowSet.rowCount() > 0);
   }
 }
