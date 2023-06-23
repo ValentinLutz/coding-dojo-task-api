@@ -53,17 +53,20 @@ public class TaskApi {
     UUID taskId = UUID.fromString(ctx.pathParam("task_id"));
     TaskRequest taskRequest = ctx.bodyAsClass(TaskRequest.class);
 
-    TaskResponse taskResponse =
-        TaskResponse.fromTask(taskRepoPort.update(TaskRequest.toTask(taskId, taskRequest)));
-
-    ctx.json(taskResponse).status(204);
+    taskRepoPort
+        .update(TaskRequest.toTask(taskId, taskRequest))
+        .map(TaskResponse::fromTask)
+        .ifPresentOrElse(taskResponse -> ctx.json(taskResponse).status(204), () -> ctx.status(404));
   }
 
   public void deleteTask(@NotNull Context ctx) {
     UUID taskId = UUID.fromString(ctx.pathParam("task_id"));
 
-    taskRepoPort.deleteById(taskId);
-
+    final boolean isTaskDeleted = taskRepoPort.deleteById(taskId);
+    if (!isTaskDeleted) {
+      ctx.status(404);
+      return;
+    }
     ctx.status(204);
   }
 }

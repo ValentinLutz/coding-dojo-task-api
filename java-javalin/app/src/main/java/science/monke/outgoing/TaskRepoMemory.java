@@ -31,12 +31,14 @@ public class TaskRepoMemory implements TaskRepoPort {
   }
 
   @Override
-  public Task update(final Task task) {
-    return save(task);
+  public Optional<Task> update(final Task task) {
+    final Task removedTask = tasks.replace(task.taskId, task);
+    return Optional.ofNullable(removedTask);
   }
 
   @Override
-  public void deleteById(final UUID taskId) {
-    tasks.remove(taskId);
+  public boolean deleteById(final UUID taskId) {
+    final Task removedTask = tasks.remove(taskId);
+    return removedTask != null;
   }
 }

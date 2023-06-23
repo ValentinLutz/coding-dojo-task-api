@@ -72,7 +72,7 @@ public class TaskRepoPostgres implements TaskRepoPort {
   }
 
   @Override
-  public Task update(Task task) {
+  public Optional<Task> update(Task task) {
     try (Connection connection = dataSource.getConnection()) {
       try (PreparedStatement statement =
           connection.prepareStatement(
@@ -82,9 +82,9 @@ public class TaskRepoPostgres implements TaskRepoPort {
         statement.setObject(3, task.taskId);
         int rowsUpdated = statement.executeUpdate();
         if (rowsUpdated == 0) {
-          return save(task);
+          return Optional.empty();
         }
-        return task;
+        return Optional.of(task);
       }
     } catch (SQLException exception) {
       throw new RuntimeException(exception);
@@ -93,11 +93,11 @@ public class TaskRepoPostgres implements TaskRepoPort {
 
 
   @Override
-  public void deleteById(final UUID taskId) {
+  public boolean deleteById(final UUID taskId) {
     try (Connection connection = dataSource.getConnection()) {
       try (PreparedStatement statement = connection.prepareStatement("DELETE FROM public.tasks WHERE task_id = ?;")) {
         statement.setObject(1, taskId);
-        statement.executeUpdate();
+        return statement.executeUpdate() > 0;
       }
     } catch (SQLException exception) {
       throw new RuntimeException(exception);

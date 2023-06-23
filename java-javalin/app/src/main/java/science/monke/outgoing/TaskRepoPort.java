@@ -12,7 +12,7 @@ public interface TaskRepoPort {
 
   Task save(final Task task);
 
-  Task update(final Task task);
+  Optional<Task> update(final Task task);
 
-  void deleteById(final UUID taskId);
+  boolean deleteById(final UUID taskId);
 }
