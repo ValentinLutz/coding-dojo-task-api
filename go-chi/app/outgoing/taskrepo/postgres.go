@@ -1,25 +1,22 @@
 package taskrepo
 
 import (
-	"appchi/internal/model"
-	"appchi/internal/port"
-
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
-type Postres struct {
+type Postgres struct {
 	database *sqlx.DB
 }
 
-func NewPostres(database *sqlx.DB) *Postres {
-	return &Postres{
+func NewPostgres(database *sqlx.DB) *Postgres {
+	return &Postgres{
 		database: database,
 	}
 }
 
-func (taskRepository *Postres) FindAll() ([]model.TaskEntity, error) {
-	var taskEntities []model.TaskEntity
+func (taskRepository *Postgres) FindAll() ([]TaskEntity, error) {
+	var taskEntities []TaskEntity
 	err := taskRepository.database.Select(&taskEntities, "SELECT task_id, title, description FROM public.tasks")
 	if err != nil {
 		return nil, err
@@ -27,24 +24,24 @@ func (taskRepository *Postres) FindAll() ([]model.TaskEntity, error) {
 	return taskEntities, nil
 }
 
-func (taskRepository *Postres) FindByTaskId(taskId uuid.UUID) (model.TaskEntity, error) {
-	var taskEntity model.TaskEntity
+func (taskRepository *Postgres) FindByTaskId(taskId uuid.UUID) (TaskEntity, error) {
+	var taskEntity TaskEntity
 	err := taskRepository.database.Get(&taskEntity, "SELECT task_id, title, description FROM public.tasks WHERE task_id = $1", taskId)
 	if err != nil {
-		return model.TaskEntity{}, err
+		return TaskEntity{}, err
 	}
 	return taskEntity, nil
 }
 
-func (taskRepository *Postres) Save(taskEntity model.TaskEntity) (model.TaskEntity, error) {
+func (taskRepository *Postgres) Save(taskEntity TaskEntity) (TaskEntity, error) {
 	_, err := taskRepository.database.NamedExec("INSERT INTO public.tasks (task_id, title, description) VALUES (:task_id, :title, :description)", taskEntity)
 	if err != nil {
-		return model.TaskEntity{}, err
+		return TaskEntity{}, err
 	}
 	return taskEntity, nil
 }
 
-func (taskRepository *Postres) Update(taskEntity model.TaskEntity) (model.TaskEntity, error) {
+func (taskRepository *Postgres) Update(taskEntity TaskEntity) error {
 	result, err := taskRepository.database.NamedExec(`
 		UPDATE public.tasks
 		SET title = :title, description = :description
@@ -52,21 +49,21 @@ func (taskRepository *Postres) Update(taskEntity model.TaskEntity) (model.TaskEn
 		taskEntity,
 	)
 	if err != nil {
-		return model.TaskEntity{}, err
+		return err
 	}
 
 	affectedRows, err := result.RowsAffected()
 	if err != nil {
-		return model.TaskEntity{}, err
+		return err
 	}
 	if affectedRows == 0 {
-		return model.TaskEntity{}, port.ErrTaskNotFound
+		return ErrTaskNotFound
 	}
 
-	return taskEntity, nil
+	return nil
 }
 
-func (taskRepository *Postres) DeleteByTaskId(taskId uuid.UUID) error {
+func (taskRepository *Postgres) DeleteByTaskId(taskId uuid.UUID) error {
 	result, err := taskRepository.database.Exec("DELETE FROM public.tasks WHERE task_id = $1", taskId)
 	if err != nil {
 		return err
@@ -77,7 +74,7 @@ func (taskRepository *Postres) DeleteByTaskId(taskId uuid.UUID) error {
 		return err
 	}
 	if affectedRows == 0 {
-		return port.ErrTaskNotFound
+		return ErrTaskNotFound
 	}
 
 	return nil

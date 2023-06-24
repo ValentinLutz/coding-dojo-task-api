@@ -3,8 +3,6 @@ package main
 import (
 	"appchi/incoming/openapi"
 	"appchi/incoming/taskapi"
-	"appchi/internal/port"
-	"appchi/internal/service"
 	"appchi/outgoing/taskrepo"
 	"errors"
 	"log"
@@ -42,16 +40,15 @@ func main() {
 		log.Fatalf("failed to parse env USE_IN_MEMORY: %v", err)
 	}
 
-	var taskRepository port.TaskRepository
+	var taskRepository taskrepo.TaskRepository
 	if useInMemoryBool {
 		taskRepository = taskrepo.NewMemory()
 	} else {
 		database := NewDatabase()
-		taskRepository = taskrepo.NewPostres(database)
+		taskRepository = taskrepo.NewPostgres(database)
 	}
 
-	taskService := service.NewTask(taskRepository)
-	taskApi := taskapi.New(taskService)
+	taskApi := taskapi.New(taskRepository)
 
 	handler := NewHandler(taskApi)
 	server := NewServer(serverPortInt, handler)

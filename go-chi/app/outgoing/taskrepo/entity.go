@@ -1,4 +1,4 @@
-package model
+package taskrepo
 
 import "github.com/google/uuid"
 

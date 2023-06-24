@@ -1,8 +1,7 @@
 package taskapi
 
 import (
-	"appchi/internal/port"
-	"appchi/internal/service"
+	"appchi/outgoing/taskrepo"
 	"errors"
 	"net/http"
 
@@ -10,12 +9,12 @@ import (
 )
 
 type API struct {
-	taskService *service.Task
+	taskRepository taskrepo.TaskRepository
 }
 
-func New(taskService *service.Task) http.Handler {
+func New(taskRepository taskrepo.TaskRepository) http.Handler {
 	taskApi := &API{
-		taskService: taskService,
+		taskRepository: taskRepository,
 	}
 
 	errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
@@ -27,7 +26,7 @@ func New(taskService *service.Task) http.Handler {
 }
 
 func (api *API) GetTasks(w http.ResponseWriter, r *http.Request) {
-	tasks, err := api.taskService.GetTasks()
+	tasks, err := api.taskRepository.FindAll()
 	if err != nil {
 		HttpError(w, r, http.StatusInternalServerError, err.Error())
 		return
@@ -47,7 +46,7 @@ func (api *API) CreateTask(w http.ResponseWriter, r *http.Request) {
 		HttpError(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
-	task, err := api.taskService.CreateTask(taskRequest.ToNewTask())
+	task, err := api.taskRepository.Save(taskRequest.ToNewTask())
 	if err != nil {
 		HttpError(w, r, http.StatusInternalServerError, err.Error())
 		return
@@ -57,8 +56,8 @@ func (api *API) CreateTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) DeleteTask(w http.ResponseWriter, r *http.Request, uuid types.UUID) {
-	err := api.taskService.DeleteTask(uuid)
-	if errors.Is(err, port.ErrTaskNotFound) {
+	err := api.taskRepository.DeleteByTaskId(uuid)
+	if errors.Is(err, taskrepo.ErrTaskNotFound) {
 		HttpError(w, r, http.StatusNotFound, err.Error())
 		return
 	}
@@ -71,7 +70,7 @@ func (api *API) DeleteTask(w http.ResponseWriter, r *http.Request, uuid types.UU
 }
 
 func (api *API) GetTask(w http.ResponseWriter, r *http.Request, taskId types.UUID) {
-	task, err := api.taskService.GetTask(taskId)
+	task, err := api.taskRepository.FindByTaskId(taskId)
 	if err != nil {
 		HttpError(w, r, http.StatusNotFound, err.Error())
 		return
@@ -87,8 +86,8 @@ func (api *API) UpdateTask(w http.ResponseWriter, r *http.Request, taskId types.
 		return
 	}
 
-	_, err = api.taskService.UpdateTask(taskRequest.ToTask(taskId))
-	if errors.Is(err, port.ErrTaskNotFound) {
+	err = api.taskRepository.Update(taskRequest.ToTask(taskId))
+	if errors.Is(err, taskrepo.ErrTaskNotFound) {
 		HttpError(w, r, http.StatusNotFound, err.Error())
 		return
 	}

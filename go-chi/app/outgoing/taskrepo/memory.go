@@ -1,27 +1,25 @@
 package taskrepo
 
 import (
-	"appchi/internal/model"
-	"appchi/internal/port"
 	"sync"
 
 	"github.com/google/uuid"
 )
 
 type Memory struct {
-	tasks map[uuid.UUID]model.TaskEntity
+	tasks map[uuid.UUID]TaskEntity
 	mutex sync.RWMutex
 }
 
 func NewMemory() *Memory {
-	return &Memory{tasks: map[uuid.UUID]model.TaskEntity{}}
+	return &Memory{tasks: map[uuid.UUID]TaskEntity{}}
 }
 
-func (taskRepository *Memory) FindAll() ([]model.TaskEntity, error) {
+func (taskRepository *Memory) FindAll() ([]TaskEntity, error) {
 	taskRepository.mutex.RLock()
 	defer taskRepository.mutex.RUnlock()
 
-	var tasks []model.TaskEntity
+	var tasks []TaskEntity
 	for _, entity := range taskRepository.tasks {
 		tasks = append(tasks, entity)
 	}
@@ -29,18 +27,18 @@ func (taskRepository *Memory) FindAll() ([]model.TaskEntity, error) {
 	return tasks, nil
 }
 
-func (taskRepository *Memory) FindByTaskId(taskId uuid.UUID) (model.TaskEntity, error) {
+func (taskRepository *Memory) FindByTaskId(taskId uuid.UUID) (TaskEntity, error) {
 	taskRepository.mutex.RLock()
 	defer taskRepository.mutex.RUnlock()
 
 	entity, ok := taskRepository.tasks[taskId]
 	if !ok {
-		return model.TaskEntity{}, port.ErrTaskNotFound
+		return TaskEntity{}, ErrTaskNotFound
 	}
 	return entity, nil
 }
 
-func (taskRepository *Memory) Save(taskEntity model.TaskEntity) (model.TaskEntity, error) {
+func (taskRepository *Memory) Save(taskEntity TaskEntity) (TaskEntity, error) {
 	taskRepository.mutex.Lock()
 	defer taskRepository.mutex.Unlock()
 
@@ -48,17 +46,17 @@ func (taskRepository *Memory) Save(taskEntity model.TaskEntity) (model.TaskEntit
 	return taskEntity, nil
 }
 
-func (taskRepository *Memory) Update(taskEntity model.TaskEntity) (model.TaskEntity, error) {
+func (taskRepository *Memory) Update(taskEntity TaskEntity) error {
 	taskRepository.mutex.Lock()
 	defer taskRepository.mutex.Unlock()
 
 	_, ok := taskRepository.tasks[taskEntity.TaskId]
 	if !ok {
-		return model.TaskEntity{}, port.ErrTaskNotFound
+		return ErrTaskNotFound
 	}
 
 	taskRepository.tasks[taskEntity.TaskId] = taskEntity
-	return taskEntity, nil
+	return nil
 }
 
 func (taskRepository *Memory) DeleteByTaskId(taskId uuid.UUID) error {
@@ -67,7 +65,7 @@ func (taskRepository *Memory) DeleteByTaskId(taskId uuid.UUID) error {
 
 	_, ok := taskRepository.tasks[taskId]
 	if !ok {
-		return port.ErrTaskNotFound
+		return ErrTaskNotFound
 	}
 
 	delete(taskRepository.tasks, taskId)

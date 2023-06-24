@@ -1,10 +1,10 @@
 package taskapi
 
 import (
-	"appchi/internal/model"
+	"appchi/outgoing/taskrepo"
 )
 
-func NewTaskResponseFromTask(task model.TaskEntity) TaskResponse {
+func NewTaskResponseFromTask(task taskrepo.TaskEntity) TaskResponse {
 	return TaskResponse{
 		Description: task.Description,
 		Title:       task.Title,
