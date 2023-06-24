@@ -9,7 +9,7 @@ RUN ./mvnw package -offline
 
 
 FROM amazoncorretto:17-alpine3.17-jdk
-COPY --from=builder /build/target/appspring-1.0.0-SNAPSHOT.jar /deployments/spring-run.jar
+COPY --from=builder /build/target/app-spring-web-mvc-1.0.0-SNAPSHOT.jar /deployments/spring-run.jar
 CMD ["java", "-jar", "/deployments/spring-run.jar"]
 
 

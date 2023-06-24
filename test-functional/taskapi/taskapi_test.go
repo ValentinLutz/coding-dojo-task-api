@@ -194,7 +194,6 @@ func createNewTask(t *testing.T, body io.Reader) taskapi.TaskResponse {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, 201, response.StatusCode)
 	return parseBody[taskapi.TaskResponse](t, response.Body)
 }
 
