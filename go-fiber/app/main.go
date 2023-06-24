@@ -3,8 +3,6 @@ package main
 import (
 	"appfiber/incoming/openapi"
 	"appfiber/incoming/taskapi"
-	"appfiber/internal/port"
-	"appfiber/internal/service"
 	"appfiber/outgoing/taskrepo"
 	"context"
 	"log"
@@ -38,16 +36,15 @@ func main() {
 		log.Fatalf("failed to parse env USE_IN_MEMORY: %v", err)
 	}
 
-	var taskRepository port.TaskRepository
+	var taskRepository taskrepo.TaskRepository
 	if useInMemoryBool {
 		taskRepository = taskrepo.NewMemory()
 	} else {
 		database := NewDatabase()
-		taskRepository = taskrepo.NewPostres(database)
+		taskRepository = taskrepo.NewPostgres(database)
 	}
 
-	taskService := service.NewTask(taskRepository)
-	taskApi := taskapi.New(taskService)
+	taskApi := taskapi.New(taskRepository)
 	openApi := openapi.New()
 
 	app := newApp(taskApi, openApi)

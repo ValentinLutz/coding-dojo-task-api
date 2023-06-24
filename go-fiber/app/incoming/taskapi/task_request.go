@@ -1,21 +1,21 @@
 package taskapi
 
 import (
-	"appfiber/internal/model"
+	"appfiber/outgoing/taskrepo"
 
 	"github.com/google/uuid"
 )
 
-func (taskRequest TaskRequest) ToNewTask() model.TaskEntity {
-	return model.TaskEntity{
+func (taskRequest TaskRequest) ToNewTaskEntity() taskrepo.TaskEntity {
+	return taskrepo.TaskEntity{
 		TaskId:      uuid.New(),
 		Title:       taskRequest.Title,
 		Description: taskRequest.Description,
 	}
 }
 
-func (taskRequest TaskRequest) ToTask(taskId uuid.UUID) model.TaskEntity {
-	return model.TaskEntity{
+func (taskRequest TaskRequest) ToUpdatedTaskEntity(taskId uuid.UUID) taskrepo.TaskEntity {
+	return taskrepo.TaskEntity{
 		TaskId:      taskId,
 		Title:       taskRequest.Title,
 		Description: taskRequest.Description,

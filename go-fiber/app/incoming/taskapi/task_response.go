@@ -1,10 +1,10 @@
 package taskapi
 
 import (
-	"appfiber/internal/model"
+	"appfiber/outgoing/taskrepo"
 )
 
-func NewTaskResponseFromTask(task model.TaskEntity) TaskResponse {
+func NewTaskResponseFromTaskEntity(task taskrepo.TaskEntity) TaskResponse {
 	return TaskResponse{
 		Description: task.Description,
 		Title:       task.Title,

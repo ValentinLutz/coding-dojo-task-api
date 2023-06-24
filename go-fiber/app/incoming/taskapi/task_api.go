@@ -1,8 +1,7 @@
 package taskapi
 
 import (
-	"appfiber/internal/port"
-	"appfiber/internal/service"
+	"appfiber/outgoing/taskrepo"
 	"errors"
 	"net/http"
 
@@ -11,12 +10,12 @@ import (
 )
 
 type API struct {
-	taskService *service.Task
+	taskRepository taskrepo.TaskRepository
 }
 
-func New(taskService *service.Task) *API {
+func New(taskRepository taskrepo.TaskRepository) *API {
 	taskApi := &API{
-		taskService: taskService,
+		taskRepository: taskRepository,
 	}
 
 	return taskApi
@@ -31,14 +30,14 @@ func (api *API) RegisterRoutes(app *fiber.App) {
 }
 
 func (api *API) GetTasks(ctx *fiber.Ctx) error {
-	tasks, err := api.taskService.GetTasks()
+	tasks, err := api.taskRepository.FindAll()
 	if err != nil {
 		return HttpError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
 	tasksResponse := make(TasksResponse, 0)
 	for _, order := range tasks {
-		tasksResponse = append(tasksResponse, NewTaskResponseFromTask(order))
+		tasksResponse = append(tasksResponse, NewTaskResponseFromTaskEntity(order))
 	}
 
 	return HttpResponseWithJsonBody(ctx, http.StatusOK, tasksResponse)
@@ -50,12 +49,12 @@ func (api *API) PostTask(ctx *fiber.Ctx) error {
 	if err != nil {
 		return HttpError(ctx, http.StatusInternalServerError, err.Error())
 	}
-	task, err := api.taskService.CreateTask(taskRequest.ToNewTask())
+	task, err := api.taskRepository.Save(taskRequest.ToNewTaskEntity())
 	if err != nil {
 		return HttpError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return HttpResponseWithJsonBody(ctx, http.StatusCreated, NewTaskResponseFromTask(task))
+	return HttpResponseWithJsonBody(ctx, http.StatusCreated, NewTaskResponseFromTaskEntity(task))
 }
 
 func (api *API) DeleteTask(ctx *fiber.Ctx) error {
@@ -64,8 +63,8 @@ func (api *API) DeleteTask(ctx *fiber.Ctx) error {
 		return HttpError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	err = api.taskService.DeleteTask(taskId)
-	if errors.Is(err, port.ErrTaskNotFound) {
+	err = api.taskRepository.DeleteByTaskId(taskId)
+	if errors.Is(err, taskrepo.ErrTaskNotFound) {
 		return HttpError(ctx, http.StatusNotFound, err.Error())
 	}
 	if err != nil {
@@ -81,12 +80,12 @@ func (api *API) GetTask(ctx *fiber.Ctx) error {
 		return HttpError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	task, err := api.taskService.GetTask(taskId)
+	task, err := api.taskRepository.FindByTaskId(taskId)
 	if err != nil {
 		return HttpError(ctx, http.StatusNotFound, err.Error())
 	}
 
-	return HttpResponseWithJsonBody(ctx, http.StatusOK, NewTaskResponseFromTask(task))
+	return HttpResponseWithJsonBody(ctx, http.StatusOK, NewTaskResponseFromTaskEntity(task))
 }
 
 func (api *API) PutTask(ctx *fiber.Ctx) error {
@@ -101,8 +100,8 @@ func (api *API) PutTask(ctx *fiber.Ctx) error {
 		return HttpError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	_, err = api.taskService.UpdateTask(taskRequest.ToTask(taskId))
-	if errors.Is(err, port.ErrTaskNotFound) {
+	err = api.taskRepository.Update(taskRequest.ToUpdatedTaskEntity(taskId))
+	if errors.Is(err, taskrepo.ErrTaskNotFound) {
 		return HttpError(ctx, http.StatusNotFound, err.Error())
 	}
 	if err != nil {
