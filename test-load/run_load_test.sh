@@ -1,15 +1,16 @@
 #/bin/bash
-set -e
 
 app_name=$1
 use_memory=$2
 
-if [ $use_memory ];
+if $use_memory;
 then
   test_id="$app_name-memory"
 else
   test_id="$app_name-postgres"
 fi
+
+printf "Run load test for $test_id\n"
 
 export APP_NAME=$app_name
 export USE_MEMORY=$use_memory

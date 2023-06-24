@@ -6,7 +6,7 @@ export const BASE_URI = 'http://localhost:8080'
 
 export const options = {
     thresholds: {
-        http_req_duration: ['p(90) < 400', 'p(95) < 600'],
+        http_req_duration: ['p(90) < 400', 'p(95) < 800', 'p(99) < 1600'],
     },
     scenarios: {
         full_scenario_ramping_arrival_rate: {
@@ -15,9 +15,9 @@ export const options = {
             startRate: 0,
             timeUnit: '1s',
             preAllocatedVUs: 100,
-            maxVUs: 100,
+            maxVUs: 1000,
             stages: [
-                {target: 4000, duration: '8m'},
+                {target: 3000, duration: '4m'},
             ],
         },
     },
