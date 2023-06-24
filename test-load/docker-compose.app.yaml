@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-
   app:
     image: harbor.doubleslash.de/coding-dojo-stuttgart/${APP_NAME}:latest
     container_name: coding_dojo_app
@@ -32,13 +31,8 @@ services:
       POSTGRES_DB: test
       POSTGRES_USER: test
       POSTGRES_PASSWORD: password
-    deploy:
-      resources:
-        limits:
-          memory: 1g
-          cpus: '2'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U test"]
       interval: 5s
       timeout: 5s
       retries: 5
