@@ -21,6 +21,9 @@ test.functional:: ## Run functional tests
 	cd test-functional && \
 		go test -count=1 ./...
 
+start.container:: ## Start docker containers
+	docker compose -f test-load/docker-compose.test.yaml up -d
+
 stop.container:: ## Stop docker containers
 	docker compose -f test-load/docker-compose.app.yaml down && \
 		docker compose -f test-load/docker-compose.test.yaml down

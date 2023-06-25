@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     image: harbor.doubleslash.de/coding-dojo-stuttgart/${APP_NAME}:latest
-    container_name: coding_dojo_app
+    container_name: ${TEST_ID}
     ports:
       - "8080:8080"
     environment:
@@ -20,11 +20,11 @@ services:
           memory: 2g
           cpus: '1'
     depends_on:
-     db:
-       condition: service_healthy
+      db:
+        condition: service_healthy
 
   db:
-    image: postgres:15
+    image: postgres:15.3-alpine3.17
     container_name: db
     environment:
       POSTGRES_PORT: 5432
@@ -32,7 +32,7 @@ services:
       POSTGRES_USER: test
       POSTGRES_PASSWORD: password
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U test"]
+      test: [ "CMD-SHELL", "pg_isready -U test" ]
       interval: 5s
       timeout: 5s
       retries: 5
