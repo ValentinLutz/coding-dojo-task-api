@@ -14,10 +14,10 @@ export const options = {
             executor: 'ramping-arrival-rate',
             startRate: 0,
             timeUnit: '1s',
-            preAllocatedVUs: 100,
+            preAllocatedVUs: 1000,
             maxVUs: 1000,
             stages: [
-                {target: 3000, duration: '4m'},
+                {target: 2000, duration: '4m'},
             ],
         },
     },
@@ -33,6 +33,7 @@ export function fullScenario() {
 
 export function getTasks() {
     const params = {
+        responseType: 'none',
         tags: {
             name: `${BASE_URI}/tasks`
         },
@@ -71,6 +72,7 @@ export function postTask() {
 
 export function getTask(task_id) {
     const params = {
+        responseType: 'none',
         tags: {
             name: `${BASE_URI}/tasks/{taskId}`
         },
@@ -90,6 +92,7 @@ export function putTask(task_id) {
     });
 
     const params = {
+        responseType: 'none',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -107,6 +110,7 @@ export function putTask(task_id) {
 
 export function deleteTask(task_id) {
     const params = {
+        responseType: 'none',
         tags: {
             name: `${BASE_URI}/tasks/{taskId}`
         },
