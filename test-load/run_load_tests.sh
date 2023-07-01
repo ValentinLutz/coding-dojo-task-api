@@ -57,7 +57,8 @@ do
     "task-app-java-quarkus-reactive" \
     "task-app-java-spring-web-mvc" \
     "task-app-go-chi" \
-    "task-app-go-fiber"
+    "task-app-go-fiber" \
+    "task-app-rust-axum"
   do
     run_load_test $app_name $use_memory
   done
