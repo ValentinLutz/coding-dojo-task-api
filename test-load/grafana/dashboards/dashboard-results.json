@@ -1149,7 +1149,7 @@
           "exemplar": false,
           "expr": "(histogram_sum(rate($metrics{testid=~\"$testid\"}[$__rate_interval]))\n/\nhistogram_count(rate($metrics{testid=~\"$testid\"}[$__rate_interval]))) ",
           "hide": false,
-          "legendFormat": "Response  Time (avg)  - {{testid}}",
+          "legendFormat": "Response  Time (avg)  - {{method}} {{url}}",
           "range": true,
           "refId": "C"
         }
@@ -4003,7 +4003,7 @@
           "exemplar": false,
           "expr": "(histogram_sum(rate(k6_http_req_duration_seconds{testid=~\"$testid\",scenario=~\"$scenario\"}[$__rate_interval]))\n/\nhistogram_count(rate(k6_http_req_duration_seconds{testid=~\"$testid\",scenario=~\"$scenario\"}[$__rate_interval]))) ",
           "hide": false,
-          "legendFormat": "Response  Time (avg)  - {{testid}}",
+          "legendFormat": "Response  Time (avg)  - {{method}} {{url}}",
           "range": true,
           "refId": "C"
         }
