@@ -8,7 +8,7 @@ import (
 
 type Memory struct {
 	tasks map[uuid.UUID]TaskEntity
-	mutex sync.RWMutex
+	mutex sync.Mutex
 }
 
 func NewMemory() *Memory {
@@ -16,8 +16,8 @@ func NewMemory() *Memory {
 }
 
 func (taskRepository *Memory) FindAll() ([]TaskEntity, error) {
-	taskRepository.mutex.RLock()
-	defer taskRepository.mutex.RUnlock()
+	taskRepository.mutex.Lock()
+	defer taskRepository.mutex.Unlock()
 
 	var tasks []TaskEntity
 	for _, entity := range taskRepository.tasks {
@@ -28,8 +28,8 @@ func (taskRepository *Memory) FindAll() ([]TaskEntity, error) {
 }
 
 func (taskRepository *Memory) FindByTaskId(taskId uuid.UUID) (TaskEntity, error) {
-	taskRepository.mutex.RLock()
-	defer taskRepository.mutex.RUnlock()
+	taskRepository.mutex.Lock()
+	defer taskRepository.mutex.Unlock()
 
 	entity, ok := taskRepository.tasks[taskId]
 	if !ok {
