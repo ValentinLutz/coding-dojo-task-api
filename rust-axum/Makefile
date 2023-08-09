@@ -9,6 +9,10 @@ app.run:: ## Run the app
 	cd app && \
 		cargo run
 
+
+docker.image:: ## Build docker image
+	docker compose -f deployment-docker/docker-compose.yaml build
+
 docker.up:: ## Start containers
 	docker compose -f deployment-docker/docker-compose.yaml \
 		up --force-recreate --build

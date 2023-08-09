@@ -5,6 +5,9 @@ help::
 		| awk -F':.*?## | \\| ' '{printf "\033[36m%-38s \033[37m %-68s \033[35m%s \n", $$1, $$2, $$3}'
 
 
+docker.image:: ## Build docker image
+	docker compose -f deployment-docker/docker-compose.yaml build
+
 docker.up:: ## Start containers
 	docker compose -f deployment-docker/docker-compose.yaml \
 		up --force-recreate --build

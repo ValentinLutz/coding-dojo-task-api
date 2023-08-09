@@ -7,7 +7,7 @@ help::
 export GOPROXY=direct
 
 dep.oapi-codegen:: # Install oapi-codegen with go install
-	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.4
+	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.13.4
 
 
 app/incoming/taskapi/server.gen.go: dep.oapi-codegen api-definition/task_api.yaml api-definition/server.app.yaml ## Generate task api server from open api definition
@@ -19,9 +19,15 @@ app/incoming/taskapi/types.gen.go: dep.oapi-codegen api-definition/task_api.yaml
 		api-definition/task_api.yaml
 
 
+app.gen:: app/incoming/taskapi/server.gen.go app/incoming/taskapi/types.gen.go ## Generate server and types
+
 app.run:: app/incoming/taskapi/server.gen.go app/incoming/taskapi/types.gen.go  ## Run the app
 	cd app && \
 		go run main.go
+
+
+docker.image:: app.gen ## Build docker image
+	docker compose -f deployment-docker/docker-compose.yaml build
 
 docker.up:: app/incoming/taskapi/server.gen.go app/incoming/taskapi/types.gen.go ## Start containers
 	docker compose -f deployment-docker/docker-compose.yaml \

@@ -5,14 +5,14 @@ help::
 		| awk -F':.*?## | \\| ' '{printf "\033[36m%-38s \033[37m %-68s \033[35m%s \n", $$1, $$2, $$3}'
 
 build.images:: ## Build docker images
-	docker compose -f go-chi/deployment-docker/docker-compose.yaml build && \
-		docker compose -f go-fiber/deployment-docker/docker-compose.yaml build && \
-		docker compose -f java-quarkus-resteasy/deployment-docker/docker-compose.yaml build && \
-		docker compose -f java-quarkus-reactive/deployment-docker/docker-compose.yaml build && \
-		docker compose -f java-spring-web-mvc/deployment-docker/docker-compose.yaml build && \
-		docker compose -f java-spring-webflux/deployment-docker/docker-compose.yaml build && \
-		docker compose -f java-javalin/deployment-docker/docker-compose.yaml build && \
-		docker compose -f rust-axum/deployment-docker/docker-compose.yaml build
+	make -C go-chi docker.image && \
+		make -C go-fiber docker.image && \
+		make -C java-quarkus-resteasy docker.image && \
+		make -C java-quarkus-reactive docker.image && \
+		make -C java-spring-web-mvc docker.image && \
+		make -C java-spring-webflux docker.image && \
+		make -C java-javalin docker.image && \
+		make -C rust-axum docker.image
 
 test.load:: ## Run load tests
 	cd test-load && \
