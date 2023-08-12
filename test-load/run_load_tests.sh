@@ -52,13 +52,13 @@ for use_memory in \
 do
   for app_name in \
     "task-app-go-chi" \
+    "task-app-rust-axum" \
     "task-app-go-fiber" \
     "task-app-java-javalin" \
     "task-app-java-quarkus-reactive" \
     "task-app-java-quarkus-resteasy" \
-    "task-app-java-spring-web-mvc"
-    "task-app-java-spring-webflux" \
-    "task-app-rust-axum" \
+    "task-app-java-spring-web-mvc" \
+    "task-app-java-spring-webflux"
   do
     run_load_test $app_name $use_memory
   done

@@ -17,7 +17,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2g
+          memory: 4g
           cpus: '1'
     depends_on:
       db:
